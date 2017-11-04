@@ -46,7 +46,8 @@ Because it helps with efficiency by reducing the number of instructions required
 ### Which loop optimisations are performed by the compiler in order to vectorise and pipeline loops?
 Other than optimizations such as unrolling, loop collapsing or interchange, fusion (join two loops), fission (break two loops) which are useful for parallelization the compiler also uses the following techniques to allow auto vectorization.
 1. Inlining function calls: In general loops are not vectorizable if they have function calls. However if this function itself is vectorizable then it may get inlined and allow the whole function to be vectorized.
-2. Conditional assignments within a loop can be vectorized using masks. For example
+2. Conditional assignments within a loop can be vectorized using masks. For example:
+
 ```C++
 void quad(int length, float *a, float *b, 
             float *c, float *restrict x1, float *restrict x2) {
@@ -68,6 +69,7 @@ For this example all branches are evaluated but finally based on masks only the 
     * By increasing locality (temporal and spatial) of the data cache if its reusable.
     * By reducing the number of iterations of the loop by a factor of the length of each vector, or number of operations being performed per SIMD operation.
 The second point is illustrated through the following example:
+
 #### Before vectorization:
 ```C++
 i=0;
@@ -77,6 +79,7 @@ while(i<n) {
     ++i;
 }
 ```
+
 #### After vectorization:
 ```C++
 // The vectorizer generates the following two loops
@@ -97,7 +100,7 @@ while(i<n) {
 4. Loop blocking: Loop blocking is not used for vectorization directly but rather serves as a performance booster by minimizing cache misses. Examples may include breaking the loops into blocks. For example.
 
 #### Before:
-```
+```C++
 void add(int a[][MAX], int b[][MAX]) {
     int i, j;
     for (i = 0; i < MAX; i++) {
