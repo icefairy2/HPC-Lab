@@ -68,7 +68,7 @@ For this example all branches are evaluated but finally based on masks only the 
     * By increasing locality (temporal and spatial) of the data cache if its reusable.
     * By reducing the number of iterations of the loop by a factor of the length of each vector, or number of operations being performed per SIMD operation.
 The second point is illustrated through the following example:
-Before vectorization:
+#### Before vectorization:
 ```C++
 i=0;
 while(i<n) {
@@ -77,7 +77,7 @@ while(i<n) {
     ++i;
 }
 ```
-After vectorization:
+#### After vectorization:
 ```C++
 // The vectorizer generates the following two loops
 i=0;
@@ -94,9 +94,10 @@ while(i<n) {
     ++i;
 }
 ```
-4. Loop blocking: Loop blocking is not used for vectorization directly but rather serves as a performance booster by minimizing cache misses. Examples may include breaking the loops into blocks. For example:
-Before:
-```C++
+4. Loop blocking: Loop blocking is not used for vectorization directly but rather serves as a performance booster by minimizing cache misses. Examples may include breaking the loops into blocks. For example.
+
+#### Before:
+```
 void add(int a[][MAX], int b[][MAX]) {
     int i, j;
     for (i = 0; i < MAX; i++) {
@@ -106,7 +107,7 @@ void add(int a[][MAX], int b[][MAX]) {
     }
 }
 ```
-After:
+#### After:
 ```C++
 void add(int a[][MAX], int b[][MAX]) {
     int i, j, ii, jj;
