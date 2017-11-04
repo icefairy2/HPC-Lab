@@ -1,0 +1,126 @@
+# Assignment 1
+## Part 1:
+### What is a module system and how do you use it?
+#### Definition
+It is a utility for managing application-specific environment settings. It helps manage the user environment variables such as PATH, MANPATH, LD_LIBRARY_PATH etc.
+#### Usage:
+To load a module module load <package_name>
+To unload module module unload <package_name>
+For example if you want to load gcc 6
+module load gcc/6
+if now you wish to switch to another version of gcc
+module switch gcc gcc/5
+Or if you want to disable gcc module entirely
+module unload gcc
+
+### How can you execute programs on the clusters's compute nodes? Describe the interactive mode and the batch mode.
+Jobs are submitted to SLURM (Slurm is an open source, fault-tolerant, and highly scalable cluster management and job scheduling system for large and small Linux clusters).
+Jobs can be submitted in two modes:
+1. Using an inetractive SLURM shell
+For program testing and short runs the following sequnce of commands can be used: First salloc is invoked to reserve the needed resources. Then, mpiexec can be used to start up a program on these resources.
+
+2. Using a SLURM batch script
+Write a script as given according to SLURM documentation and submit with sbatch
+
+## Part 2
+### Why is it important to align data structures?
+Because it helps with efficiency by reducing the number of instructions required to load an element into a register from a memory address. Also vectorization is possible only if addresses are aligned.
+
+### Which kind of obstacles prevent vectorization?
+1. Non contiguous memory access such as loops with non unit stride or indirect addressing.
+2. Data dependencies.
+
+### Is there a way to assist the compiler through language extensions? If yes, please give details.
+1. Pragmas: 
+    a. #pragma ivdep #pragma novector
+    b. #pragma vector always, #pragma loop count (n)
+    c. #pragma vectory align (asserts data is aligned for intel SSE instructions)
+    d. #pragma vector non temporal (data doesn't need to be cached)
+2. Keywords
+    a. restrict: memory referenced by a pointer is not aliased
+3. Options/Switches
+    a. Interprocedural optimization (IPO) - may help with inlining. Using Q[ip] or Q[ipo].
+    b. Disambiguation of pointers and arrays: Using options -fno-alias asserts there is no aliasing of memory references.
+4. High level optimization - Additional optimizations that help with vectorization. Enable it with switch o3
+
+### Which loop optimisations are performed by the compiler in order to vectorise and pipeline loops?
+Other than optimizations such as unrolling, loop collapsing or interchange, fusion (join two loops), fission (break two loops) which are useful for parallelization the compiler also uses the following techniques to allow auto vectorization.
+1. Inlining function calls: In general loops are not vectorizable if they have function calls. However if this function itself is vectorizable then it may get inlined and allow the whole function to be vectorized.
+2. Conditional assignments within a loop can be vectorized using masks. For example
+```C++
+void quad(int length, float *a, float *b, 
+            float *c, float *restrict x1, float *restrict x2) {
+    for (int i=0; i<length; i++) {
+        float s = b[i]*b[i] - 4*a[i]*c[i];
+        if ( s >= 0 ) {
+            s = sqrt(s) ;
+            x2[i] = (-b[i]+s)/(2.*a[i]);
+            x1[i] = (-b[i]-s)/(2.*a[i]);
+        } else {
+            x2[i] = 0.;
+            x1[i] = 0.;
+        }
+    }
+}
+```
+For this example all branches are evaluated but finally based on masks only the required ones are stored.
+3. Strip mining and blocking: Uses loop transformation for SIMD encodings of loops (for example by using intrinsics). Transforms in two ways:
+    * By increasing locality (temporal and spatial) of the data cache if its reusable.
+    * By reducing the number of iterations of the loop by a factor of the length of each vector, or number of operations being performed per SIMD operation.
+The second point is illustrated through the following example:
+Before vectorization:
+```C++
+i=0;
+while(i<n) {
+    // Original loop code
+    a[i]=b[i]+c[i];
+    ++i;
+}
+```
+After vectorization:
+```C++
+// The vectorizer generates the following two loops
+i=0;
+while(i<(n-n%4)) {
+    // Vector strip-mined loop
+    // Subscript [i:i+3] denotes SIMD execution
+    a[i:i+3]=b[i:i+3]+c[i:i+3];
+    i=i+4;
+}
+// Cleanup loop
+while(i<n) {
+    // Scalar clean-up loop
+    a[i]=b[i]+c[i];
+    ++i;
+}
+```
+4. Loop blocking: Loop blocking is not used for vectorization directly but rather serves as a performance booster by minimizing cache misses. Examples may include breaking the loops into blocks. For example:
+Before:
+```C++
+void add(int a[][MAX], int b[][MAX]) {
+    int i, j;
+    for (i = 0; i < MAX; i++) {
+        for (j = 0; j < MAX; j++ {
+            a[i][j] = a[i][j] + b[j][i]; //Adds two matrices
+        }
+    }
+}
+```
+After:
+```C++
+void add(int a[][MAX], int b[][MAX]) {
+    int i, j, ii, jj;
+    for (i = 0; i < MAX; i += BS) {
+        for (j = 0; j < MAX; j += BS) {
+            for (ii = i; ii < i + BS; ii++) { //outer loop
+                for (jj = j; jj < j + BS; jj++) { 
+                    //Array B experiences one cache miss
+                    //for every iteration of outer loop
+                    a[ii][jj] = a[ii][jj] + b[jj][ii]; //Add the two arrays
+                }
+            }
+        }
+    }
+}
+```
+5. Loop Interchange and Subscripts: Sometimes loop interchange also helps with improving memory access patterns such as in the case of matrix multiplication.
