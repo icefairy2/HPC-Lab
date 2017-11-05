@@ -23,6 +23,9 @@ For program testing and short runs the following sequnce of commands can be used
 2. Using a SLURM batch script
 Write a script as given according to SLURM documentation and submit with sbatch
 
+### Write a simple "hello world" program
+The output of the program can be found in _myjob.7033.mpp3r01c02s02.out_.
+
 ## Part 2
 ### Why is it important to align data structures?
 Because it helps with efficiency by reducing the number of instructions required to load an element into a register from a memory address. Also vectorization is possible only if addresses are aligned.
@@ -129,3 +132,63 @@ void add(int a[][MAX], int b[][MAX]) {
 }
 ```
 5. Loop Interchange and Subscripts: Sometimes loop interchange also helps with improving memory access patterns such as in the case of matrix multiplication.
+
+## Part 4
+
+For the optimisation we mainly followed the tutorials linked in the Literature.
+The performance of the original code with optimizations enabled was at around 2 GFLOPS.
+First we unrolled the outer loop in the dgemm_opt function to compute a 1x4 block.
+Then we used registers and pointers for the computations. This improved the performance to ~4 GFLOPS.
+Instead of computing a 1x4 block, we changed it to 4x4 blocks.
+The outer loops now looked like this:
+```C++
+for ( j = 0; j < n; j += 4 ) { /* Loop over the columns of C, unrolled by 4 */
+  for ( i = 0; i < m; i += 4 ) { /* Loop over the rows of C */
+    /* Update C( i,j ), C( i,j+1 ), C( i,j+2 ), and C( i,j+3 ) in
+    one routine (four inner products) */
+
+    innerKernel_4x4( k, &A( i, 0 ), lda, &B( 0, j ), ldb, &C( i, j ), ldc );
+  }
+}
+```
+
+Then we switched from using standard registers to vector registers using intrinsics.
+Using 128 bit vectors improved the performance to ~5 GFLOPS.
+Using 256 bit vectors improved it to ~7 GFLOPS.
+We then switched to 512 bit registers as KNL has 2 VPUs per core which means it can execute 2 512bit instructions per clock.
+In order to do that we switched from computing 4x4 blocks to computing 4x8 blocks.
+```C++
+for ( j = 0; j < n; j += 8 ) { /* Loop over the columns of C, unrolled by 8 */
+  for ( i = 0; i < m; i += 4 ) { /* Loop over the rows of C */
+    innerKernel_4x8( k, &A( i, 0 ), lda, &B( 0, j ), ldb, &C( i, j ), ldc );
+  }
+}
+```
+
+This improved the performance to about 13 GFLOPS.
+Because the switch from 1x4 to 4x4 blocks improved the performance, we tried to compute 8x8 blocks instead of 4x8 blocks.
+We also started using intrinsics for adding __mm512_add_pd_ and multiplication __mm512_mul_pd_.
+This improved the performance to ~20 GFLOPS, after we also changed the Alignment to 64.
+
+We tried to improve the performance more by unrolling the inner loop in the _inner512_8x8_ kernel.
+The largest improvement was achieved when unrulling the loop by 4.
+The performance then was ~23 Gflops.
+```C++
+void inner512_8x8(int K_, double* A, int lda, double* B, int ldb, double* C, int ldc) {
+  /** Declare 512d vector registers **/
+  for (int k = 0; k < K_; k+=4) { // Step by 4 
+      /** Same computation as before now unrolled by 4 **/
+  }
+}
+```
+
+To keep performance up for larger problem sizes, we added code to divide the matrices into smaller blocks.
+
+Literature suggests that packing the matrices A and B into contiguous memory can improve the performance quite a lot, so we tried to do that.
+Despite trying different things, we weren't able to achieve a performance gain doing this.
+Performance even decreased.
+Our code for packing is still in the file, but it is not used.
+
+In the end the peak performance that we achieved was around 23 GFLOPS.
+
+An output of a run can be found in _myjob.7259.mpp3r01c04s10.out_.

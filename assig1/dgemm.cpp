@@ -7,18 +7,14 @@
 
 #include "Stopwatch.h"
 
-//#include "mmintrin.h"
-//#include "xmmintrin.h"
-//#include "pmmintrin.h"
-//#include "emmintrin.h"
 #include "immintrin.h" //avx512
 
 
 
 // macros for better readability
-#define A(i,j) A[ (j)*lda + (i)] // M
-#define B(i,j) B[ (j)*ldb + (i)] // K
-#define C(i,j) C[ (j)*ldc + (i)] // M
+#define A(i,j) A[ (j)*lda + (i)]
+#define B(i,j) B[ (j)*ldb + (i)]
+#define C(i,j) C[ (j)*ldc + (i)]
 
 // for blocking
 #define mc 256
@@ -38,8 +34,13 @@ void dgemm(double* A, double* B, double* C) {
   }
 }
 
+/**
+ * Kernel computing C += A*B
+ * Uses intrinsics for computation
+ */
 void inner512_8x8(int K_, double* A, int lda, double* B, int ldb, double* C, int ldc) {
 	
+	// vector registers
 	__m512d
 	c_00_10_20_30_40_50_60_70_v,
 	c_01_11_21_31_41_51_61_71_v,
@@ -70,7 +71,7 @@ void inner512_8x8(int K_, double* A, int lda, double* B, int ldb, double* C, int
 		
 		a_0k_1k_2k_3k_4k_5k_6k_7k_v = _mm512_load_pd( (double *) &A(0,k));
 		
-		
+		/** we left this here to show that we tried to use packing for A and B*/
 		//use for packing B
 		//b_k0_v2 = _mm512_set1_pd(B[b]);
 		//b_k1_v2 = _mm512_set1_pd(B[b+1]);
@@ -79,8 +80,7 @@ void inner512_8x8(int K_, double* A, int lda, double* B, int ldb, double* C, int
 		//b_k4_v2 = _mm512_set1_pd(B[b+4]);
 		//b_k5_v2 = _mm512_set1_pd(B[b+5]);
 		//b_k6_v2 = _mm512_set1_pd(B[b+6]);
-		//b_k7_v2 = _mm512_set1_pd(B[b+7]);
-		
+		//b_k7_v2 = _mm512_set1_pd(B[b+7]);	
 	    //b+=8;
 		
 		b_k0_v2 = _mm512_set1_pd(B(k,0));
@@ -265,8 +265,12 @@ void inner512_8x8(int K_, double* A, int lda, double* B, int ldb, double* C, int
 	_mm512_store_pd(&C(0,7), c_07_17_27_37_47_57_67_77_v);
 }
 
+/**
+* We're not using the packing methods, but we left those in the code
+* to show that we tried to use them
+*/
 
-// pack A in contiguous memory
+/** pack A in contiguous memory */
 void packA(int K_, double* A, int lda, double* A_dest) {
 	
 	//#pragma vector always
@@ -285,6 +289,7 @@ void packA(int K_, double* A, int lda, double* A_dest) {
 	}
 }
 
+/** pack B in contiguous memory */
 void packB(int K_, double* B, int ldb, double* B_dest) {
 	double 
 	*b_k0_ptr = &B(0,0), *b_k1_ptr = &B(0,1),
@@ -305,54 +310,33 @@ void packB(int K_, double* B, int ldb, double* B_dest) {
 		*B_dest++ = *b_k7_ptr++;
 	}
 	
-	//printf("a"); // only works with printf
 }
 
-// for blocking
+
 void innerKernel(int M_, int N_, int K_, double* A, int lda, double* B, int ldb, double* C, int ldc, int first) {
 	
-	//double
-	//packedA[M_*K_];
-	
+	/** for packing */
+	//double packedA[M_*K_];
 	//double packedB[kc * nb];
 
 
 	for (int n = 0; n < N_; n+=8) {
+		/** for packing */
 		//if (first) packB(K_, &B(0,n), ldb, &packedB[n*K_]);
 		for (int m = 0; m < M_; m+=8) {
+		  /** for packing */
 		  //if (n == 0) packA(K_, &A(m,0), lda, &packedA[m*K_]);
+		  /** we used this to test packing */
 		  //inner512_8x8(K_, &packedA[m*K_], 8, &B(0,n),ldb ,&C(m,n), ldc);	  
-		  
 		  //inner512_8x8(K_, &A(m,0), lda, &packedB[n*K_],K_ ,&C(m,n), ldc);
 		  
+		  /** Kernel call without packing*/
 		  inner512_8x8(K_, &A(m,0), lda, &B(0,n),ldb ,&C(m,n), ldc);
 		}
 	}
 }
 
 void dgemm_opt(double* A, double* B, double* C) {
-  
- //for (int n = 0; n < N; n+=4) {
-    //for (int m = 0; m < M; m+=4) {
-		
-	  ////inner4(&A[m], &B[n*K], &C[n*M + m]);
-		
-	  ////innerNew(&A(m,0), &B(0,n), &C(m,n));
-	  //inner256(&A(m,0), &B(0,n), &C(m,n));
-    //}
-  //}
-  
-  
-   //for (int n = 0; n < N; n+=8) {
-    //for (int m = 0; m < M; m+=8) {
-		
-	  ////inner4(&A[m], &B[n*K], &C[n*M + m]);
-		
-	  ////innerNew(&A(m,0), &B(0,n), &C(m,n));
-	  ////inner512(&A(m,0), &B(0,n), &C(m,n));
-	  //inner512_8x8(&A(m,0), &B(0,n), &C(m,n));
-    //}
-  //}
   
   int kb, mb;
   int lda = M;
@@ -366,9 +350,6 @@ void dgemm_opt(double* A, double* B, double* C) {
 		  innerKernel(mb, N, kb, &A(m,k), lda, &B(k,0), ldb, &C(m,0), ldc, m==0);
 	  } 
 	 }
-  
-  
-  
 }
 
 int main(int argc, char** argv) {
