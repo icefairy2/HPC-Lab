@@ -4,14 +4,15 @@
 #### Definition
 It is a utility for managing application-specific environment settings. It helps manage the user environment variables such as PATH, MANPATH, LD_LIBRARY_PATH etc.
 #### Usage:
-To load a module module load <package_name>
-To unload module module unload <package_name>
-For example if you want to load gcc 6
-module load gcc/6
-if now you wish to switch to another version of gcc
-module switch gcc gcc/5
-Or if you want to disable gcc module entirely
-module unload gcc
+To load a module _**module load** \<package_name\>_.  
+To unload module _**module unload** \<package_name\>_.
+
+For example if you want to load gcc 6:  
+_**module load** gcc/6_  
+if now you wish to switch to another version of gcc:  
+_**module switch** gcc gcc/5_  
+Or if you want to disable gcc module entirely:  
+_**module unload** gcc_
 
 ### How can you execute programs on the clusters's compute nodes? Describe the interactive mode and the batch mode.
 Jobs are submitted to SLURM (Slurm is an open source, fault-tolerant, and highly scalable cluster management and job scheduling system for large and small Linux clusters).
