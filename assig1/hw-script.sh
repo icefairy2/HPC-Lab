@@ -8,4 +8,4 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=00:05:00
 source /etc/profile.d/modules.sh
-srun ./a.out
+srun ./ex1.out
