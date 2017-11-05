@@ -24,7 +24,7 @@ For program testing and short runs the following sequnce of commands can be used
 Write a script as given according to SLURM documentation and submit with sbatch
 
 ### Write a simple "hello world" program
-The output of the program can be found in _myjob.7033.mpp3r01c02s02.out_.
+The program was compiled as ex1, and the script used to run in on mpp3 is hw-script.sh. The output is located in _myjob.7033.mpp3r01c02s02.out_
 
 ## Part 2
 ### Why is it important to align data structures?
@@ -132,6 +132,7 @@ void add(int a[][MAX], int b[][MAX]) {
 }
 ```
 5. Loop Interchange and Subscripts: Sometimes loop interchange also helps with improving memory access patterns such as in the case of matrix multiplication.
+<<<<<<< HEAD
 
 ## Part 4
 
@@ -192,3 +193,4 @@ Our code for packing is still in the file, but it is not used.
 In the end the peak performance that we achieved was around 23 GFLOPS.
 
 An output of a run can be found in _myjob.7259.mpp3r01c04s10.out_.
+
