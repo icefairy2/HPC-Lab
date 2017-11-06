@@ -9,7 +9,8 @@ The Files for part 3 are:
 Makefile.gauss
 gauss.cpp
 gauss.optrpt
-
+myjob.8418.mpp3r03c04s03.out
+myjob.8420.mpp3r03c04s03.out
 
 The Files for part 4 are:
 Makefile.dgemm
