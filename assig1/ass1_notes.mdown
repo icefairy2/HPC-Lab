@@ -140,6 +140,8 @@ Solving a single linear system of equations cannot be implemented efficiently as
 
 In order to have a perfectly vectorised solver for systems with different right-hand sides, we rearanged the data in memory so that the last dimension of each structure is the NRHS dimension (e.g. A[3][3][NRHS]). This way, we now apply the Gauss algorithm once and for each operation we iterate through all systems and apply it. The compiler easily vectorizes these loops, as observed in the gauss.optrpt report.
 
+After running both versions of the code on the cluster (myjob.8418.mpp3r03c04s03.out - optimized, myjob.8420.mpp3r03c04s03.out - original) we can observe a speed up of about 7.75 (from 341 us to 44 us). This has been achieved by vectorization, but also by eliminating the function call overhead for each system.
+
 ## Part 4
 
 For the optimisation we mainly followed the tutorials linked in the Literature.
