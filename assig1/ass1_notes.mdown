@@ -134,6 +134,12 @@ void add(int a[][MAX], int b[][MAX]) {
 5. Loop Interchange and Subscripts: Sometimes loop interchange also helps with improving memory access patterns such as in the case of matrix multiplication.
 <<<<<<< HEAD
 
+## Part 3
+
+Solving a single linear system of equations cannot be implemented efficiently as the inner loops are only of length 3, which is not enough to exploit SIMD registers or other vectorization techniques.
+
+In order to have a perfectly vectorised solver for systems with different right-hand sides, we rearanged the data in memory so that the last dimension of each structure is the NRHS dimension (e.g. A[3][3][NRHS]). This way, we now apply the Gauss algorithm once and for each operation we iterate through all systems and apply it. The compiler easily vectorizes these loops, as observed in the gauss.optrpt report.
+
 ## Part 4
 
 For the optimisation we mainly followed the tutorials linked in the Literature.

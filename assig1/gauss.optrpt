@@ -1,0 +1,468 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main()
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main()) [1] gauss.cpp(27,12)
+  -> INLINE: (50,13) Stopwatch::Stopwatch(Stopwatch *)
+  -> INLINE: (51,13) Stopwatch::start(Stopwatch *)
+  -> INLINE: (87,27) Stopwatch::stop(Stopwatch *)
+    -> INLINE: Stopwatch.h:(44,19) Stopwatch::pause(Stopwatch *)
+      -> INLINE: (39,15) Stopwatch::difftime(Stopwatch *, timespec)
+      -> INLINE: (40,12) Stopwatch::seconds(Stopwatch *, long long)
+    -> INLINE: Stopwatch.h:(45,5) Stopwatch::reset(Stopwatch *)
+  -> INLINE: (98,26) check(double, double *)
+    -> DELETED: (109,35) std::numeric_limits<double>::epsilon()
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at gauss.cpp(34,3)
+<Distributed chunk1>
+   remark #25426: Loop Distributed (5 way) 
+   remark #15301: PARTIAL LOOP WAS VECTORIZED
+
+   LOOP BEGIN at gauss.cpp(35,5)
+   <Distributed chunk1>
+      remark #25426: Loop Distributed (5 way) 
+      remark #25436: completely unrolled by 3   (pre-vector) 
+
+      LOOP BEGIN at gauss.cpp(41,9)
+         remark #25436: completely unrolled by 2   (pre-vector) 
+      LOOP END
+
+      LOOP BEGIN at gauss.cpp(41,9)
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(34,3)
+<Remainder loop for vectorization, Distributed chunk1>
+   remark #15301: REMAINDER LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at gauss.cpp(35,5)
+<Distributed chunk2>
+   remark #25444: Loopnest Interchanged: ( 1 2 ) --> ( 2 1 )
+   remark #15542: loop was not vectorized: inner loop was already vectorized   [ gauss.cpp(35,5) ]
+
+   LOOP BEGIN at gauss.cpp(34,3)
+   <Distributed chunk2>
+      remark #15301: PARTIAL LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(34,3)
+   <Remainder loop for vectorization, Distributed chunk2>
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(34,3)
+<Distributed chunk3>
+   remark #15301: PARTIAL LOOP WAS VECTORIZED
+
+   LOOP BEGIN at gauss.cpp(44,9)
+      remark #15315: loop was not vectorized: estimated number of iterations (0) is insufficient for vectorization
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(44,9)
+      remark #15423: loop was not vectorized: has only one iteration
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(44,9)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(35,5)
+   <Distributed chunk3>
+      remark #25436: completely unrolled by 3   (pre-vector) 
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(35,5)
+<Distributed chunk4>
+   remark #25444: Loopnest Interchanged: ( 1 2 ) --> ( 2 1 )
+   remark #15542: loop was not vectorized: inner loop was already vectorized   [ gauss.cpp(35,5) ]
+
+   LOOP BEGIN at gauss.cpp(34,3)
+   <Distributed chunk4>
+      remark #15301: PARTIAL LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(34,3)
+   <Remainder loop for vectorization, Distributed chunk4>
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(35,5)
+<Distributed chunk5>
+   remark #25444: Loopnest Interchanged: ( 1 2 ) --> ( 2 1 )
+   remark #15306: loop was not vectorized: inner loop was transformed to memset or memcpy
+
+   LOOP BEGIN at gauss.cpp(34,3)
+   <Distributed chunk5>
+      remark #25408: memset generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(54,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at gauss.cpp(56,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at gauss.cpp(57,9)
+         remark #15300: LOOP WAS VECTORIZED
+      LOOP END
+
+      LOOP BEGIN at gauss.cpp(57,9)
+      <Remainder loop for vectorization>
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+      LOOP END
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(60,5)
+      remark #15300: LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(60,5)
+   <Remainder loop for vectorization>
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(63,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at gauss.cpp(65,9)
+         remark #25399: memcopy generated
+         remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+      LOOP END
+
+      LOOP BEGIN at gauss.cpp(68,9)
+         remark #15542: loop was not vectorized: inner loop was already vectorized
+
+         LOOP BEGIN at gauss.cpp(69,13)
+            remark #15300: LOOP WAS VECTORIZED
+         LOOP END
+
+         LOOP BEGIN at gauss.cpp(69,13)
+         <Remainder loop for vectorization>
+            remark #15301: REMAINDER LOOP WAS VECTORIZED
+         LOOP END
+      LOOP END
+
+      LOOP BEGIN at gauss.cpp(72,9)
+         remark #15300: LOOP WAS VECTORIZED
+      LOOP END
+
+      LOOP BEGIN at gauss.cpp(72,9)
+      <Remainder loop for vectorization>
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(78,5)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at gauss.cpp(79,9)
+      remark #25399: memcopy generated
+      remark #15398: loop was not vectorized: loop was transformed to memset or memcpy
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(81,9)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+
+      LOOP BEGIN at gauss.cpp(82,13)
+         remark #15300: LOOP WAS VECTORIZED
+      LOOP END
+
+      LOOP BEGIN at gauss.cpp(82,13)
+      <Remainder loop for vectorization>
+         remark #15301: REMAINDER LOOP WAS VECTORIZED
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(90,3)
+   remark #15301: OUTER LOOP WAS VECTORIZED
+
+   LOOP BEGIN at gauss.cpp(91,5)
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   LOOP END
+LOOP END
+
+LOOP BEGIN at gauss.cpp(97,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed FLOW dependence between correct (98:5) and correct (98:15)
+
+   LOOP BEGIN at gauss.cpp(108,3) inlined into gauss.cpp(98,26)
+      remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ gauss.cpp(109,5) ]
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+gauss.cpp(39,9):remark #34026: call to memset implemented as a call to optimized library version
+gauss.cpp(66,13):remark #34026: call to memcpy implemented as a call to optimized library version
+gauss.cpp(80,13):remark #34026: call to memcpy implemented as a call to optimized library version
+gauss.cpp(27,12):remark #34051: REGISTER ALLOCATION : [main] gauss.cpp:27
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   63[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm31 k0-k7]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   29[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm9 zmm16 k0-k3]
+        
+    Routine temporaries
+        Total         :     327
+            Global    :     162
+            Local     :     165
+        Regenerable   :      42
+        Spilled       :      11
+        
+    Routine stack
+        Variables     :   304044 bytes*
+            Reads     :      17 [2.70e+05 ~ 6.5%]
+            Writes    :      21 [3.32e+04 ~ 0.8%]
+        Spills        :      88 bytes*
+            Reads     :      12 [3.47e+01 ~ 0.0%]
+            Writes    :      12 [2.02e+01 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: check(double, double *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (check(double, double *)) [3] gauss.cpp(107,35)
+  -> DELETED: (109,35) std::numeric_limits<double>::epsilon()
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at gauss.cpp(108,3)
+   remark #15520: loop was not vectorized: loop with multiple exits cannot be vectorized unless it meets search loop idiom criteria   [ gauss.cpp(110,14) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+gauss.cpp(107,35):remark #34051: REGISTER ALLOCATION : [_Z5checkdPd] gauss.cpp:107
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   63[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm31 k0-k7]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    8[ rax rdi zmm0-zmm3 zmm16 k0]
+        
+    Routine temporaries
+        Total         :      18
+            Global    :      10
+            Local     :       8
+        Regenerable   :       3
+        Spilled       :       0
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: print_matrix(const char *, double (*)[3])
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (print_matrix(const char *, double (*)[3])) [4] gauss.cpp(116,58)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at gauss.cpp(119,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed OUTPUT dependence between call:printf(const char *, ...) (121:13) and call:printf(const char *, ...) (123:9)
+   remark #25436: completely unrolled by 3  
+
+   LOOP BEGIN at gauss.cpp(120,9)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #25436: completely unrolled by 3  
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(120,9)
+   LOOP END
+
+   LOOP BEGIN at gauss.cpp(120,9)
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+gauss.cpp(116,58):remark #34051: REGISTER ALLOCATION : [_Z12print_matrixPKcPA3_d] gauss.cpp:116
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   63[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm31 k0-k7]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    5[ rax rsi rdi r12 zmm0]
+        
+    Routine temporaries
+        Total         :      57
+            Global    :       8
+            Local     :      49
+        Regenerable   :      28
+        Spilled       :       1
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       8 bytes*
+            Reads     :       1 [1.00e+00 ~ 1.6%]
+            Writes    :       1 [1.00e+00 ~ 1.6%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: print_vector(const char *, double *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (print_vector(const char *, double *)) [5] gauss.cpp(127,52)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at gauss.cpp(130,5)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #25436: completely unrolled by 3  
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+gauss.cpp(127,52):remark #34051: REGISTER ALLOCATION : [_Z12print_vectorPKcPd] gauss.cpp:127
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   63[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm31 k0-k7]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :    5[ rax rsi rdi r14 zmm0]
+        
+    Routine temporaries
+        Total         :      27
+            Global    :       8
+            Local     :      19
+        Regenerable   :      10
+        Spilled       :       1
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       8 bytes*
+            Reads     :       1 [1.00e+00 ~ 3.1%]
+            Writes    :       1 [1.00e+00 ~ 3.1%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::stop(Stopwatch *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::stop(Stopwatch *)) Stopwatch.h(43,17)
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::pause(Stopwatch *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::pause(Stopwatch *)) Stopwatch.h(36,18)
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::start(Stopwatch *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::start(Stopwatch *)) Stopwatch.h(26,16)
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::reset(Stopwatch *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::reset(Stopwatch *)) Stopwatch.h(22,16)
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::Stopwatch(Stopwatch *)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::Stopwatch(Stopwatch *)) Stopwatch.h(20,27)
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::seconds(Stopwatch *, long long)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::seconds(Stopwatch *, long long)) Stopwatch.h(15,34)
+
+===========================================================================
+
+Begin optimization report for: Stopwatch::difftime(Stopwatch *, timespec)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (Stopwatch::difftime(Stopwatch *, timespec)) Stopwatch.h(11,43)
+
+===========================================================================
