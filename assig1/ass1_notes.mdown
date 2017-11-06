@@ -138,7 +138,7 @@ void add(int a[][MAX], int b[][MAX]) {
 
 Solving a single linear system of equations cannot be implemented efficiently as the inner loops are only of length 3, which is not enough to exploit SIMD registers or other vectorization techniques.
 
-In order to have a perfectly vectorised solver for systems with different right-hand sides, we rearanged the data in memory so that the last dimension of each structure is the NRHS dimension (e.g. A[3][3][NRHS]). This way, we now apply the Gauss algorithm once and for each operation we iterate through all systems and apply it. The compiler easily vectorizes these loops, as observed in the gauss.optrpt report.
+In order to have a perfectly vectorised solver for systems with different right-hand sides, we rearanged the data in memory so that the last dimension of each structure is the NRHS dimension (e.g. A[3][3][NRHS]). This way, we apply each operation of the Gauss algorithm to all the systems at once, thus having the NRHS loops placed on the innermost level. The compiler easily vectorizes these loops, as observed in the gauss.optrpt optimization report.
 
 After running both versions of the code on the cluster (myjob.8418.mpp3r03c04s03.out - optimized, myjob.8420.mpp3r03c04s03.out - original) we can observe a speed up of about 7.75 (from 341 us to 44 us). This has been achieved by vectorization, but also by eliminating the function call overhead for each system.
 
