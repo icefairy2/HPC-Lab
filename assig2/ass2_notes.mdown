@@ -61,15 +61,43 @@ Using the reduction clause, the for loop looks like the following:
 
 #### 3. Scaling study
 Using the critical directive, the number of microseconds taken to execute the program is:
-| Nr of threads\ Value of n | 1 000 000 | 2 000 000 |
-| ------------- |:-------------:| -----:|
-| 4  | 638463 | 1262320 |
-| 8  | 716471  | 1325358 |
+#####Weak scaling
+Nr of threads: 4
+Value of n: 1 000 000
+Time of execution (micros): 638463
+
+Nr of threads: 8
+Value of n: 2 000 000
+Time of execution (micros): 1325358
+
+#####Strong scaling
+Nr of threads: 4
+Value of n: 1 000 000
+Time of execution (micros): 638463
+
+Nr of threads: 8
+Value of n: 1 000 000
+Time of execution (micros): 716471
+
+Because every single thread has to access the critical zone sequentially, the time of execution slows down by using the critical directive.
 
 Using the reduction clause:
-| Nr of threads\ Value of n | 1 000 000 | 2 000 000 |
-| ------------- |:-------------:| -----:|
-| 4  | 28519 | 31321 |
-| 8  | 29605  | 30577 |
+#####Weak scaling
+Nr of threads: 4
+Value of n: 1 000 000
+Time of execution (micros): 28519 
+
+Nr of threads: 8
+Value of n: 2 000 000
+Time of execution (micros): 30577
+
+#####Strong scaling
+Nr of threads: 4
+Value of n: 1 000 000
+Time of execution (micros): 638463
+
+Nr of threads: 8
+Value of n: 1 000 000
+Time of execution (micros): 29605
 
 ## Part 2
