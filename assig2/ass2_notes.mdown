@@ -60,6 +60,7 @@ Using the reduction clause, the for loop looks like the following:
 ```
 
 #### 3. Scaling study
+The time values are in microseconds.
 
 ##### Weak scaling using the critical directive
 Nr of threads: 4.
