@@ -1,0 +1,75 @@
+# Assignment 2
+## Part 1:
+### Shared memory pi-calculation
+#### 1. Serial implementation
+Code that integrates function 1/(1+x^2) over [0, 1].
+```C++
+//function to be integrated
+double phi(double x) {
+    return 1 / (1 + x*x);
+}
+
+int main(int argc, char** argv)
+{
+    int i;
+    double h, y, sum;
+    //number of partitions
+    long n = 100000000;
+
+    h = 1. / n;
+
+    sum = 0;
+
+    for (i = 0; i <= n; i++)
+    {
+        //calculate function value at current partition
+        y = phi(i*h);
+        //add current function value to sum
+        sum += y;
+    }
+    sum *= 4. * h;
+	//result of integration is in sum
+	
+    return 0;
+}
+```
+
+#### 2. Parralelized application
+With the critical directive, the for loop becomes:
+```C++
+#pragma omp parallel for private(y), shared(sum) 
+    for (i = 0; i <= n; i++)
+    {
+        //calculate function value at current partition
+        y = phi(i*h);
+#pragma omp critical 
+        //add current function value to sum
+        sum += y;
+    }
+```
+Using the reduction clause, the for loop looks like the following:
+```C++
+#pragma omp parallel for private(y), reduction(+: sum)
+    for (i = 0; i <= n; i++)
+    {
+        //calculate function value at current partition
+        y = phi(i*h);
+        //add current function value to sum
+        sum += y;
+    }
+```
+
+#### 3. Scaling study
+Using the critical directive, the number of microseconds taken to execute the program is:
+| Nr of threads\ Value of n | 1 000 000 | 2 000 000 |
+| ------------- |:-------------:| -----:|
+| 4  | 638463 | 1262320 |
+| 8  | 716471  | 1325358 |
+
+Using the reduction clause:
+| Nr of threads\ Value of n | 1 000 000 | 2 000 000 |
+| ------------- |:-------------:| -----:|
+| 4  | 28519 | 31321 |
+| 8  | 29605  | 30577 |
+
+## Part 2
