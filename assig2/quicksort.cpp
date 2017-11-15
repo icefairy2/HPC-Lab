@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <omp.h>
+
 #include "Stopwatch.h"
 
 void print_list(double *data, int length){
@@ -50,6 +52,61 @@ void quicksort(double *data, int length){
 	quicksort(&(data[left]), length - left);
 }
 
+void quicksort_parallel(double *data, int length){
+	if (length <= 1) return;
+
+	//print_list(data, length);
+
+	double pivot = data[0];
+	double temp;
+	int left = 1;
+	int right = length - 1;
+
+	do {
+		while(left < (length - 1) && data[left] <= pivot) left++;
+		while(right > 0 && data[right] >= pivot) right--;
+		
+		/* swap elements */
+		if(left < right){
+			temp = data[left];
+			data[left] = data[right];
+			data[right] = temp;
+		}
+
+	} while(left < right);
+	
+	if(data[right] < pivot){
+		data[0] = data[right];
+		data[right] = pivot;
+	}
+
+	//print_list(data, length);
+
+	/* recursion */
+	#pragma omp task final(right < 10000)
+	{
+	quicksort_parallel(data, right);
+	}
+	#pragma omp task final ((length - left) < 10000)
+	{
+	quicksort_parallel(&(data[left]), length - left);
+	}
+}
+
+/** Wrapper for defining the parallel region */
+void quicksort_wrapper(double *data, int length){
+	
+	#pragma omp parallel
+	{
+		
+		// only a single thread launches the tasks
+		#pragma omp single
+		{
+			quicksort_parallel(data, length);
+		}
+	}
+}
+
 int check(double *data, int length){
 	int i;
 	for(i = 1; i < length; i++)
@@ -82,13 +139,17 @@ int main(int argc, char **argv)
 	for (i = 0; i < length; i++){
 		data[i] = (double)rand() / (double)RAND_MAX;
 	}
+	
+	printf("Max threads possible: %d\n", omp_get_num_procs());
+	printf("Num threads: %d\n", omp_get_max_threads());
 
 	Stopwatch stopwatch;
 	stopwatch.start();
 	
 	//print_list(data, length);
 
-	quicksort(data, length);
+	//quicksort(data, length);
+	quicksort_wrapper(data,length);
 
 	double time = stopwatch.stop();	
 
