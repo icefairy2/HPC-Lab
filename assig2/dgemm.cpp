@@ -42,7 +42,7 @@ void dgemm(double* A, double* B, double* C, int S) {
  * C: M x N, ld S
  */
 void microkernel(double* A, double* B, double* C, int S) {
-  
+  /*
   int lda = 64;
   int ldb = 64;
   int ldc = 64;
@@ -173,7 +173,7 @@ void microkernel(double* A, double* B, double* C, int S) {
 	_mm512_store_pd(&C(0,5), c_05_15_25_35_45_55_65_75_v);
 	_mm512_store_pd(&C(0,6), c_06_16_26_36_46_56_66_76_v);
 	_mm512_store_pd(&C(0,7), c_07_17_27_37_47_57_67_77_v);
-  
+  */
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -464,6 +464,7 @@ void inner512_8x8(int K_, double* A, int lda, double* B, int ldb, double* C, int
 	_mm512_store_pd(&C(0,5), c_05_15_25_35_45_55_65_75_v);
 	_mm512_store_pd(&C(0,6), c_06_16_26_36_46_56_66_76_v);
 	_mm512_store_pd(&C(0,7), c_07_17_27_37_47_57_67_77_v);
+
 }
 
 
@@ -573,22 +574,29 @@ void dgemm_opt(double* A, double* B, double* C) {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// arch independent and slow
-void microkernel_gen2(const double* A, const double* B, double* C) {
+/**
+ * A: M x K, ld M
+ * B: K x N, ld K
+ * C: M x N, ld S
+ */
+// arch independent and slow, but works
+void microkernel_gen2(const double* A, const double* B, double* C, int S) {
 #pragma message ("LIBXSMM KERNEL COMPILATION WARNING: compiling arch-independent gemm kernel in: " __FILE__)
   unsigned int l_m = 0;
   unsigned int l_n = 0;
   unsigned int l_k = 0;
 
-  for ( l_n = 0; l_n < 128; l_n++ ) {
-    for ( l_k = 0; l_k < 128; l_k++ ) {
+  for ( l_n = 0; l_n < N; l_n++ ) {
+    for ( l_k = 0; l_k < K; l_k++ ) {
       #pragma simd
-      for ( l_m = 0; l_m < 128; l_m++ ) {
-        C[(l_n*128)+l_m] += A[(l_k*128)+l_m] * B[(l_n*128)+l_k];
+      for ( l_m = 0; l_m < M; l_m++ ) {
+        C[(l_n*S)+l_m] += A[(l_k*M)+l_m] * B[(l_n*K)+l_k];
       }
     }
   }
 }
+
+
 
 // everything set to 128, works for square, no packing
 void microkernel_gen(const double* A, const double* B, double* C) {
@@ -1922,14 +1930,24 @@ void pack_A(double* A, double* A_pack, int S) {
  */
 void GEBP(double* A, double* B, double* C, double* A_pack, int S, int threadsPerTeam)
 {
+	
 	// pack A
 	pack_A(A, A_pack, S);
+	#pragma omp parallel for num_threads(threadsPerTeam)
 	for (int n = 0; n < S; n += N) {
+		
+		
+		//int tid = omp_get_thread_num();
+        //printf("Level %d: number of threads in the team %d- %d\n",
+        //          2,  tid,omp_get_num_threads());
+		
+		
 		//microkernel
 		//microkernel_gen(A, &B[n*S], &C[n*S]);
-		microkernel_gen(A_pack, &B[n*K], &C[n*S]);  // works for square
+		//microkernel_gen(A_pack, &B[n*K], &C[n*S]);  // works for square
 		//microkernel_gen_256(A_pack, &B[n*K], &C[n*S]);  // wrong result
 		//microkernel_gen_8(A_pack, &B[n*K], &C[n*S]);  // wrong result
+		microkernel_gen2(A_pack, &B[n*K], &C[n*S], S); 
 	}
 }
 
@@ -1942,9 +1960,18 @@ void GEPP(double* A, double* B, double* C, double** A_pack, double* B_pack, int 
 {
 	//pack B
 	pack_B(B, B_pack, S);
+	#pragma omp parallel for num_threads(nTeams)
 	for (int m = 0; m < S; m += MC) {
+		
+		int tid = omp_get_thread_num();
+        //printf("Level %d: number of threads in the team %d- %d\n",
+        //          1,  tid,omp_get_num_threads());
+		
+		
 		//GEBP(&A[m], B, &C[m], A_pack[0], S, threadsPerTeam); // works for square no packing
-		GEBP(&A[m], B_pack, &C[m], A_pack[0], S, threadsPerTeam);
+		//GEBP(&A[m], B_pack, &C[m], A_pack[0], S, threadsPerTeam); // works
+		
+		GEBP(&A[m], B_pack, &C[m], A_pack[tid], S, threadsPerTeam); // parallelism
 	}
 }
 
@@ -1997,6 +2024,10 @@ int main(int argc, char** argv) {
   }
   threadsPerTeam = std::min(threadsPerTeam, nThreads);
   nTeams = nThreads / threadsPerTeam;
+  
+  printf("Num threads allowed: %d\n", omp_get_max_threads());
+  printf("nTeams: %d\n", nTeams);
+  printf("threadsPerTeam: %d\n", threadsPerTeam);
   
   /** Allocate memory */
   double* A, *B, *C, *A_test, *B_test, *C_test, **A_pack, *B_pack, *C_aux;
