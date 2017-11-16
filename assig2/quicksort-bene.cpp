@@ -83,7 +83,7 @@ void quicksort_parallel(double *data, int length){
 	//print_list(data, length);
 
 	/* recursion */
-	#pragma omp task final(right < 10000)
+	#pragma omp task final(right < 10000) // maybe make cutoff dependent on recursion level
 	{
 	quicksort_parallel(data, right);
 	}
