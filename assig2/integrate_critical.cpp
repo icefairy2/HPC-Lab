@@ -32,7 +32,7 @@ int main(int argc, char** argv)
         sum += y;
     }
 
-    sum *= 4. * h;
+    sum *= 4. * h; //value of pi
     std::cout << "Result of integration is: " << sum << std::endl;
 
     auto current_time = std::chrono::high_resolution_clock::now();
