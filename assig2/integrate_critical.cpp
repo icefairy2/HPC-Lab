@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     for (i = 0; i <= n; i++)
     {
         //calculate function value at current partition
-        y = phi(i*h);
+        y = 1 / (1 + (i*h)*(i*h));
 #pragma omp critical 
         //add current function value to sum
         sum += y;

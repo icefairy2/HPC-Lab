@@ -63,42 +63,78 @@ Using the reduction clause, the for loop looks like the following:
 The time values are in microseconds.
 
 ##### Weak scaling using the critical directive
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 638463.
+n = 1 000 000.
 
-Nr of threads: 8.
-Value of n: 2 000 000.
-Time of execution (micros): 1325358.
+N/Nr of threads: n/16.
+Time of execution (millis): 752.
+
+N/Nr of threads: 2n/32.
+Time of execution (millis): 1452.
+
+N/Nr of threads: 4n/64.
+Time of execution (millis): 2917.
+
+N/Nr of threads: 8n/128.
+Time of execution (millis): 5920.
+
+N/Nr of threads: 16n/256.
+Time of execution (millis): 19458.
 
 ##### Strong scaling using the critical directive
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 638463.
+n = 10 000 000.
 
-Nr of threads: 8.
-Value of n: 1 000 000.
-Time of execution (micros): 716471.
+Nr of threads: 16.
+Time of execution (millis): 7304.
+
+Nr of threads: 32.
+Time of execution (millis): 7390.
+
+Nr of threads: 64.
+Time of execution (millis): 7374.
+
+Nr of threads: 128.
+Time of execution (millis): 7780.
+
+Nr of threads: 256.
+Time of execution (millis): 13523.
 
 Because every single thread has to access the critical zone sequentially, the time of execution slows down by using the critical directive.
 
 
 ##### Weak scaling using the reduction clause
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 28519.
+n = 1 000 000.
 
-Nr of threads: 8.
-Value of n: 2 000 000.
-Time of execution (micros): 30577.
+N/Nr of threads: n/16.
+Time of execution (millis): 31.
+
+N/Nr of threads: 2n/32.
+Time of execution (millis): 37.
+
+N/Nr of threads: 4n/64.
+Time of execution (millis): 50.
+
+N/Nr of threads: 8n/128.
+Time of execution (millis): 73.
+
+N/Nr of threads: 16n/256.
+Time of execution (millis): 209.
 
 ##### Strong scaling using the reduction clause
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 638463.
+n = 10 000 000.
 
-Nr of threads: 8.
-Value of n: 1 000 000.
-Time of execution (micros): 29605.
+Nr of threads: 16.
+Time of execution (millis): 35.
+
+Nr of threads: 32.
+Time of execution (millis): 36.
+
+Nr of threads: 64.
+Time of execution (millis): 47.
+
+Nr of threads: 128.
+Time of execution (millis): 69.
+
+Nr of threads: 256.
+Time of execution (millis): 113.
 
 ## Part 2
