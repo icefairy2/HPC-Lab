@@ -1,4 +1,4 @@
-/** 
+/**
  * Quicksort implementation for practical course
  **/
 
@@ -8,6 +8,8 @@
 
 #include "Stopwatch.h"
 
+#include <iostream>
+
 void print_list(double *data, int length){
 	int i;
 	for(i = 0; i < length; i++)
@@ -15,7 +17,9 @@ void print_list(double *data, int length){
 	printf("\n");
 }
 
-void quicksort(double *data, int length){
+#define THRESHOLD 16
+
+void quicksort(double *data, int length, int level){
 	if (length <= 1) return;
 
 	//print_list(data, length);
@@ -28,7 +32,7 @@ void quicksort(double *data, int length){
 	do {
 		while(left < (length - 1) && data[left] <= pivot) left++;
 		while(right > 0 && data[right] >= pivot) right--;
-		
+
 		/* swap elements */
 		if(left < right){
 			temp = data[left];
@@ -37,7 +41,7 @@ void quicksort(double *data, int length){
 		}
 
 	} while(left < right);
-	
+
 	if(data[right] < pivot){
 		data[0] = data[right];
 		data[right] = pivot;
@@ -46,8 +50,10 @@ void quicksort(double *data, int length){
 	//print_list(data, length);
 
 	/* recursion */
-	quicksort(data, right);
-	quicksort(&(data[left]), length - left);
+	#pragma omp task final(level >= THRESHOLD)
+	quicksort(data, right, level + 1);
+	#pragma omp task final(level >= THRESHOLD)
+	quicksort(&(data[left]), length - left, level + 1);
 }
 
 int check(double *data, int length){
@@ -85,12 +91,14 @@ int main(int argc, char **argv)
 
 	Stopwatch stopwatch;
 	stopwatch.start();
-	
+
 	//print_list(data, length);
 
-	quicksort(data, length);
+  #pragma omp parallel
+	#pragma omp single
+	quicksort(data, length, 0);
 
-	double time = stopwatch.stop();	
+	double time = stopwatch.stop();
 
 	//print_list(data, length);
 
@@ -102,4 +110,3 @@ int main(int argc, char **argv)
 
 	return(0);
 }
-
