@@ -3,7 +3,7 @@
 ### Shared memory pi-calculation
 #### 1. Serial implementation
 Code that integrates function 1/(1+x^2) over [0, 1].
-```C++
+```c++
 //function to be integrated
 double phi(double x) {
     return 1 / (1 + x*x);
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
 #### 2. Parralelized application
 With the critical directive, the for loop becomes:
-```C++
+```c++
 #pragma omp parallel for private(y), shared(sum)
     for (i = 0; i <= n; i++)
     {
@@ -48,7 +48,7 @@ With the critical directive, the for loop becomes:
     }
 ```
 Using the reduction clause, the for loop looks like the following:
-```C++
+```c++
 #pragma omp parallel for private(y), reduction(+: sum)
     for (i = 0; i <= n; i++)
     {
@@ -137,28 +137,28 @@ Strong scaling shows that if the problem is big enough adding more threads to pa
 #### 1. The STREAM benchmark allocates 3 arrays and performs 3 sub-benchmarks on them. These benchmarks consist in O(n) loops over the data which perform different operations, as follows:
 
 Copy
-```C
+```c
 #pragma omp parallel for
 for (j=0; j<STREAM_ARRAY_SIZE; j++)
     c[j] = a[j];
 ```
 
 Scale
-```C
+```c
 #pragma omp parallel for
 for (j=0; j<STREAM_ARRAY_SIZE; j++)
     b[j] = scalar*c[j];
 ```
 
 Add
-```C
+```c
 #pragma omp parallel for
 for (j=0; j<STREAM_ARRAY_SIZE; j++)
     c[j] = a[j]+b[j];
 ```
 
 Triad
-```C
+```c
 #pragma omp parallel for
 for (j=0; j<STREAM_ARRAY_SIZE; j++)
     a[j] = b[j]+scalar*c[j];
