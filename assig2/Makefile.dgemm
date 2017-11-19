@@ -11,7 +11,7 @@ CXX=icpc
 CXXFLAGS=-O3 -xMIC-AVX512 -qopenmp
 LDFLAGS=-qopenmp
 DEFINES=-DALIGNMENT=$(ALIGNMENT) -DM=$(M) -DN=$(N) -DK=$(K) -DMC=$(MC)
-SOURCES=dgemm.cpp
+SOURCES=dgemm.cpp ${wildcard kernels/kernel*.cpp}
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=dgemm
 
