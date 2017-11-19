@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     }
     sum *= 4. * h;
 	//result of integration is in sum
-	
+
     return 0;
 }
 ```
@@ -37,12 +37,12 @@ int main(int argc, char** argv)
 #### 2. Parralelized application
 With the critical directive, the for loop becomes:
 ```C++
-#pragma omp parallel for private(y), shared(sum) 
+#pragma omp parallel for private(y), shared(sum)
     for (i = 0; i <= n; i++)
     {
         //calculate function value at current partition
         y = phi(i*h);
-#pragma omp critical 
+#pragma omp critical
         //add current function value to sum
         sum += y;
     }
@@ -63,42 +63,174 @@ Using the reduction clause, the for loop looks like the following:
 The time values are in microseconds.
 
 ##### Weak scaling using the critical directive
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 638463.
+n = 1 000 000.
 
-Nr of threads: 8.
-Value of n: 2 000 000.
-Time of execution (micros): 1325358.
+N/Nr of threads: n/16.
+Time of execution (millis): 752.
+
+N/Nr of threads: 2n/32.
+Time of execution (millis): 1452.
+
+N/Nr of threads: 4n/64.
+Time of execution (millis): 2917.
+
+N/Nr of threads: 8n/128.
+Time of execution (millis): 5920.
+
+N/Nr of threads: 16n/256.
+Time of execution (millis): 19458.
 
 ##### Strong scaling using the critical directive
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 638463.
+n = 10 000 000.
 
-Nr of threads: 8.
-Value of n: 1 000 000.
-Time of execution (micros): 716471.
+Nr of threads: 16.
+Time of execution (millis): 7304.
+
+Nr of threads: 32.
+Time of execution (millis): 7390.
+
+Nr of threads: 64.
+Time of execution (millis): 7374.
+
+Nr of threads: 128.
+Time of execution (millis): 7780.
+
+Nr of threads: 256.
+Time of execution (millis): 13523.
 
 Because every single thread has to access the critical zone sequentially, the time of execution slows down by using the critical directive.
 
 
 ##### Weak scaling using the reduction clause
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 28519.
+n = 1 000 000.
 
-Nr of threads: 8.
-Value of n: 2 000 000.
-Time of execution (micros): 30577.
+N/Nr of threads: n/16.
+Time of execution (millis): 31.
+
+N/Nr of threads: 2n/32.
+Time of execution (millis): 37.
+
+N/Nr of threads: 4n/64.
+Time of execution (millis): 50.
+
+N/Nr of threads: 8n/128.
+Time of execution (millis): 73.
+
+N/Nr of threads: 16n/256.
+Time of execution (millis): 209.
 
 ##### Strong scaling using the reduction clause
-Nr of threads: 4.
-Value of n: 1 000 000.
-Time of execution (micros): 638463.
+n = 10 000 000.
 
-Nr of threads: 8.
-Value of n: 1 000 000.
-Time of execution (micros): 29605.
+Nr of threads: 16.
+Time of execution (millis): 35.
+
+Nr of threads: 32.
+Time of execution (millis): 36.
+
+Nr of threads: 64.
+Time of execution (millis): 47.
+
+Nr of threads: 128.
+Time of execution (millis): 69.
+
+Nr of threads: 256.
+Time of execution (millis): 113.
 
 ## Part 2
+
+### STREAM benchmark
+#### 1. The STREAM benchmark allocates 3 arrays and performs 3 sub-benchmarks on them. These benchmarks consist in O(n) loops over the data which perform different operations, as follows:
+
+Copy
+```C
+#pragma omp parallel for
+for (j=0; j<STREAM_ARRAY_SIZE; j++)
+    c[j] = a[j];
+```
+
+Scale
+```C
+#pragma omp parallel for
+for (j=0; j<STREAM_ARRAY_SIZE; j++)
+    b[j] = scalar*c[j];
+```
+
+Add
+```C
+#pragma omp parallel for
+for (j=0; j<STREAM_ARRAY_SIZE; j++)
+    c[j] = a[j]+b[j];
+```
+
+Triad
+```C
+#pragma omp parallel for
+for (j=0; j<STREAM_ARRAY_SIZE; j++)
+    a[j] = b[j]+scalar*c[j];
+```
+
+#### 2. We can pass the array size as a compile time definition -DSTREAM_ARRAY_SIZE=80000000. This will use ~610 MB per array (1.8 GB in total).
+
+#### 3. Flat vs Cache, Quadrant vs snc4
+In **cache mode**, MCDRAM acts as L3 direct mapped cache. Using it is transparent to the user. This mode is suitable for legacy applications which are hard to modify in order to exploit flat mode. Applications which have good spatial and temporal locality can achieve peak performance.
+In **flat mode**, MCDRAM and DDR4 can be allocated selectively using Memkind library. This gives the user better control over the data that goes into the high bandwidth memory. It is highly useful for applications which are limited by DDR4 bandwidth.
+
+In **quadrant** mode, the chip is divided into 4 virtual quadrants. In this mode the tag directory and memory channel are located in the same quadrant. This mode is transparent to the user and thus it is easier to use.
+In **SNC4** mode, each quadrant is exposed as a separate NUMA node. Software must be optimized for the NUMA architecture, but an optimized application will render best performance.
+
+#### 4 Running the benchmark on the cluster with 64 threads yields the following:
+
+##### quad,cache
+Function  |  Best Rate MB/s | Avg time  |   Min time  |   Max time
+--- | --- | --- | --- | ---
+Copy:    |      228009.4  |   0.005730  |   0.005614 |    0.005889
+Scale:   |      233666.0  |   0.005561  |   0.005478  |   0.005701
+Add:     |      146352.8  |   0.013542  |   0.013119  |   0.013960
+Triad:   |      266622.4  |   0.007758   |  0.007201   |  0.008317
+
+##### quad, flat
+Function  |  Best Rate MB/s | Avg time  |   Min time  |   Max time
+--- | --- | --- | --- | ---
+Copy:     |      76583.2  |   0.017029   |  0.016714   | 0.022321
+Scale:    |      76600.6  |   0.017015  |   0.016710   |  0.021970
+Add:      |      82431.5  |   0.024193  |   0.023292  |   0.028823
+Triad:     |     82230.3  |   0.023611  |   0.023349  |   0.027358
+
+##### snc4, cache
+Function  |  Best Rate MB/s | Avg time  |   Min time  |   Max time
+--- | --- | --- | --- | ---
+Copy:      |    218988.0  |   0.005921   |  0.005845  |   0.005991
+Scale:     |    217356.6  |   0.005956   |  0.005889  |   0.006097
+Add:      |     185631.5  |   0.011186  |   0.010343  |   0.011798
+Triad:    |     271760.0  |   0.007150  |   0.007065  |   0.007254
+
+##### snc4, flat
+Function  |  Best Rate MB/s | Avg time  |   Min time  |   Max time
+--- | --- | --- | --- | ---
+Copy:      |     12225.0  |   0.105086  |  0.104704 |    0.106260
+Scale:    |      12084.6   |  0.106379  |   0.105920 |    0.107742
+Add:     |       13078.7   |  0.147689  |   0.146804  |   0.152449
+Triad:    |      13013.2 |    0.148147   |  0.147543 |    0.148948
+
+Using flat mode, bandwidth is lower when compared to cache mode, as memory is allocated by default in DDR4. The application has to explicitly allocate memory in MCDRAM, whereas in cache mode, MCDRAM is used as an L3 cache.
+
+#### 5. Flat vs cache on stream
+
+Flat bandwidth is worse than cache as the memory is allocated by default in DDR4. By using `numactl -m 1` to allocate the data in MCDRAM, the application has peak performance bandwidth.
+
+##### quad, flat
+Function  |  Best Rate MB/s | Avg time  |   Min time  |   Max time
+--- | --- | --- | --- | ---
+Copy:    |      221682.6  |   0.005875   |  0.005774  |  0.005953
+Scale:    |     307697.7   |  0.004223  |   0.004160  |   0.004293
+Add:      |     220740.7   |  0.008891   |  0.008698   |  0.009048
+Triad:     |    370306.9  |   0.005228   |  0.005185  |   0.005280
+
+##### snc4, flat
+Function  |  Best Rate MB/s | Avg time  |   Min time  |   Max time
+--- | --- | --- | --- | ---
+Copy:     |     223110.5  |   0.005863  |   0.005737  |   0.005953
+Scale:    |     310815.1  |   0.004213  |   0.004118  |   0.004266
+Add:      |     222196.4   |  0.008890 |   0.008641  |   0.009032
+Triad:    |     369728.8  |   0.005229   |  0.005193  |   0.005274
