@@ -17,7 +17,9 @@ int main(int argc, char** argv)
     int i;
     double h, y, sum;
     //number of partitions
-    long n = 100000000;
+    long n = 1000000000;
+
+    std::cout << "Number of partitions: " << n << std::endl;
 
     h = 1. / n;
 
@@ -36,7 +38,7 @@ int main(int argc, char** argv)
 
     auto current_time = std::chrono::high_resolution_clock::now();
     long diff;
-    diff = std::chrono::duration_cast<std::chrono::microseconds> (current_time - start_time).count();
-    std::cout << diff << std::endl;
+    diff = std::chrono::duration_cast<std::chrono::milliseconds> (current_time - start_time).count();
+    std::cout << "Execution time: " << diff << std::endl;
     return 0;
 }
