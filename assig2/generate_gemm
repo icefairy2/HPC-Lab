@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ $# -ne 5 ]; then
+    echo "Usage: generate_gemm <M> <N> <K> <S> <arch>" 
+    exit 1
+fi
+M=$1
+N=$2
+K=$3
+S=$4
+arch=$5
+folder=~/code/HPC-Lab/assig2/kernels/
+method_name=kernel_M${M}_N${N}_K${K}_S${S}_${arch}
+file_name=${method_name}.cpp
+prepend="extern long libxsmm_num_total_flops\;\n\n"
+rm -f $folder$file_name
+./libxsmm_gemm_generator dense ${folder}${file_name} $method_name $M $N $K $M \
+$K $S 1 1 0 0 $arch nopf DP
+sed -i "1s;^;${prepend};" ${folder}${file_name}
