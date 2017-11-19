@@ -63,112 +63,74 @@ Using the reduction clause, the for loop looks like the following:
 The time values are in microseconds.
 
 ##### Weak scaling using the critical directive
-n = 1 000 000.
+n = 25 000 000.
 
 N/Nr of threads: n/16.
-Time of execution (millis): 752.
+Time of execution (s): 17.931.
 
 N/Nr of threads: 2n/32.
-Time of execution (millis): 1452.
+Time of execution (s): 36.884.
 
 N/Nr of threads: 4n/64.
-Time of execution (millis): 2917.
+Time of execution (s): 76.407.
 
 N/Nr of threads: 8n/128.
-Time of execution (millis): 5920.
-
-N/Nr of threads: 16n/256.
-Time of execution (millis): 19458.
+Time of execution (s): 149.951.
 
 ##### Strong scaling using the critical directive
-n = 10 000 000.
+n = 100 000 000.
 
 Nr of threads: 16.
-Time of execution (millis): 7304.
+Time of execution (s): 73.772.
 
 Nr of threads: 32.
-Time of execution (millis): 7390.
+Time of execution (s): 73.902.
 
 Nr of threads: 64.
-Time of execution (millis): 7374.
+Time of execution (s): 77.451.
 
 Nr of threads: 128.
-Time of execution (millis): 7780.
-
-Nr of threads: 256.
-Time of execution (millis): 13523.
+Time of execution (s): 78.451.
 
 Because every single thread has to access the critical zone sequentially, the time of execution slows down by using the critical directive.
 
 
 ##### Weak scaling using the reduction clause
-n = 1 000 000.
+n = 250 000 000.
 
 N/Nr of threads: n/16.
-Time of execution (millis): 31.
+Time of execution (s): 0.176.
 
 N/Nr of threads: 2n/32.
-Time of execution (millis): 37.
+Time of execution (s): 0.181.
 
 N/Nr of threads: 4n/64.
-Time of execution (millis): 50.
+Time of execution (s): 0.202.
 
 N/Nr of threads: 8n/128.
-Time of execution (millis): 73.
-
-N/Nr of threads: 16n/256.
-Time of execution (millis): 209.
+Time of execution (s): 0.302.
 
 ##### Strong scaling using the reduction clause
-n = 10 000 000.
+n = 1 000 000 000.
 
 Nr of threads: 16.
-Time of execution (millis): 35.
+Time of execution (s): 0.610.
 
 Nr of threads: 32.
-Time of execution (millis): 36.
+Time of execution (s): 0.325.
 
 Nr of threads: 64.
-Time of execution (millis): 47.
+Time of execution (s): 0.196.
 
 Nr of threads: 128.
-Time of execution (millis): 69.
+Time of execution (s): 0.188.
 
-Nr of threads: 256.
-Time of execution (millis): 113.
+###Conclusion
+Using the critical directive kills performance because threads have to access the critical section one after another.
+Parallelizing with the reduction clause leads to faster execution once more threads are introduced.
 
-## Part 2
+Strong scaling shows that if the problem is big enough adding more threads to parallelize it works up to a certain point. It will have diminishing returns once the problem chunks are so small that the overhead of adding more threads doesn’t help anymore.
 
-### STREAM benchmark
-#### 1. The STREAM benchmark allocates 3 arrays and performs 3 sub-benchmarks on them. These benchmarks consist in O(n) loops over the data which perform different operations, as follows:
-
-Copy
-```C
-#pragma omp parallel for
-for (j=0; j<STREAM_ARRAY_SIZE; j++)
-    c[j] = a[j];
-```
-
-Scale
-```C
-#pragma omp parallel for
-for (j=0; j<STREAM_ARRAY_SIZE; j++)
-    b[j] = scalar*c[j];
-```
-
-Add
-```C
-#pragma omp parallel for
-for (j=0; j<STREAM_ARRAY_SIZE; j++)
-    c[j] = a[j]+b[j];
-```
-
-Triad
-```C
-#pragma omp parallel for
-for (j=0; j<STREAM_ARRAY_SIZE; j++)
-    a[j] = b[j]+scalar*c[j];
-```
 
 #### 2. We can pass the array size as a compile time definition -DSTREAM_ARRAY_SIZE=80000000. This will use ~610 MB per array (1.8 GB in total).
 
