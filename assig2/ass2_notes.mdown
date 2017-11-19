@@ -229,6 +229,30 @@ Scale:    |     310815.1  |   0.004213  |   0.004118  |   0.004266
 Add:      |     222196.4   |  0.008890 |   0.008641  |   0.009032
 Triad:    |     369728.8  |   0.005229   |  0.005193  |   0.005274
 
+## Part 3
+### 1. Parallelization
+
+To parallelize the quicksort algorithm, we mark the recursive calls as tasks. To stop new tasks from being created after a recursion level, we introduce a new parameter to the quickosrt function called `level`. We then use this incrementing parameter as the condition for the `final` openmp task statement.
+
+```c
+#pragma omp task final(level >= THRESHOLD)
+quicksort(data, right, level + 1);
+#pragma omp task final(level >= THRESHOLD)
+quicksort(&(data[left]), length - left, level + 1);
+```
+
+Finally, we mark the first call of quicksort as a single call inside a parallel region.
+```c
+#pragma omp parallel
+#pragma omp single
+quicksort(data, length, 0);
+```
+
+### 2. Scalability
+
+Using an array of 100 million elements, we examine the strong scalability of the implementation.
+The scalability plot can be found in part3-plot.pdf .
+
 
 ## Part 4
 ### Part 1: Suitable values for _mr_, _nr_, _mc_ and kc
