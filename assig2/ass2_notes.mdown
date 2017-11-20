@@ -263,8 +263,8 @@ Number of threads | Time
 32 | 4.74
 64 | 4.18
 
-## 4
-### Part 1: Suitable values for _mr_, _nr_, _mc_ and kc
+## Part 4
+### 1: Suitable values for _mr_, _nr_, _mc_ and kc
 For reference the algorithm is described here in short:
 C = A x B where sizeOf(A)=sizeOf(B) = S x S
 1. Divide A into a block of size mc x kc and B into a panel of kc x S
@@ -282,9 +282,13 @@ Setting the number of threads (`OMP_NUM_THREADS`) to 128 gave the best results. 
 These settings gave us a **peak performance of about 370 GFLOPS amounting to a speedup of about 20**
 
 ### 3: Strong scaling analyses
-#### A: Change number of threads with a fixed problem size of.
-We kept the problem size fixed at 4096. The results are illustrated below. Clearly after a certain point performance starts to decline.
+
+  A. Change number of threads with a fixed problem size.
+We kept the problem size fixed at 4096. The results are illustrated below. Clearly after a certain point performance starts to decline. This is due to the fact that after a certain point cost of parallelization (forking/sharing etc.) overwhelms its advantages.
+
 ![Result1](images/pic1.png)
-#### B: Change the problem size with a fixed number of threads.
+
+  B. Change the problem size with a fixed number of threads.
 We kept the number of threads fixed at 64. The results are illustrated below. Clearly after a certain point performance starts to decline.
+
 ![Result2](images/pic2.png)
