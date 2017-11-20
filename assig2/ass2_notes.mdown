@@ -263,7 +263,7 @@ Number of threads | Time
 32 | 4.74
 64 | 4.18
 
-## Part 4
+## 4
 ### Part 1: Suitable values for _mr_, _nr_, _mc_ and kc
 For reference the algorithm is described here in short:
 C = A x B where sizeOf(A)=sizeOf(B) = S x S
@@ -277,8 +277,14 @@ Elements of B are reused and hence must remain in L1 cache. As a result nr x kc 
 
 So to summarise we the following variables were chose: **mr=8nr=8mc=128kc=128**. With this configuration our **GEMM had a peak performance of about 20 GFLOPS**. While the microkernel alone had a peak performance of about 33 GFLOPS (libxsmm).
 
-### Part 2: Parallelization
-Setting the number of threads (`OMP_NUM_THREADS`) to 64 gave the best results. Further increase in threads decreased the performance. Also, **4 threads per team** seem gave the best performance. This is because of hyperthreading and better L1 cache utilization for the packed B matrix (Since L1 is shared between hyperthreads).
-This settings gave us a **peak performance of about 334 GFLOPS**
+### 2: Parallelization
+Setting the number of threads (`OMP_NUM_THREADS`) to 128 gave the best results. Further increase in threads decreased the performance. Also, **4 threads per team** gave the best performance. This is because of hyperthreading and better L1 cache utilization for the packed B matrix (Since L1 is shared between hyperthreads).
+These settings gave us a **peak performance of about 370 GFLOPS amounting to a speedup of about 20**
 
-### Part 3: Strong scaling analyses <TODO>
+### 3: Strong scaling analyses
+#### A: Change number of threads with a fixed problem size of.
+We kept the problem size fixed at 4096. The results are illustrated below. Clearly after a certain point performance starts to decline.
+![Result1](images/pic1.png)
+#### B: Change the problem size with a fixed number of threads.
+We kept the number of threads fixed at 64. The results are illustrated below. Clearly after a certain point performance starts to decline.
+![Result2](images/pic2.png)
