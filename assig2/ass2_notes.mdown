@@ -228,3 +228,57 @@ Copy:     |     223110.5  |   0.005863  |   0.005737  |   0.005953
 Scale:    |     310815.1  |   0.004213  |   0.004118  |   0.004266
 Add:      |     222196.4   |  0.008890 |   0.008641  |   0.009032
 Triad:    |     369728.8  |   0.005229   |  0.005193  |   0.005274
+
+## Part 3
+### 1. Parallelization
+
+To parallelize the quicksort algorithm, we mark the recursive calls as tasks. To stop new tasks from being created after a recursion level, we introduce a new parameter to the quickosrt function called `level`. We then use this incrementing parameter as the condition for the `final` openmp task statement.
+
+```c
+#pragma omp task final(level >= THRESHOLD)
+quicksort(data, right, level + 1);
+#pragma omp task final(level >= THRESHOLD)
+quicksort(&(data[left]), length - left, level + 1);
+```
+
+Finally, we mark the first call of quicksort as a single call inside a parallel region.
+```c
+#pragma omp parallel
+#pragma omp single
+quicksort(data, length, 0);
+```
+
+### 2. Scalability
+
+Using an array of 100 million elements, we examine the strong scalability of the implementation.
+The scalability plot can be found in part3-plot.pdf .
+
+Number of threads | Time
+--- | ---
+1 | 79.74
+2 | 44.26
+4 | 22.61
+8 | 11.90
+16 | 6.61
+32 | 4.74
+64 | 4.18
+
+## Part 4
+### Part 1: Suitable values for _mr_, _nr_, _mc_ and kc
+For reference the algorithm is described here in short:
+C = A x B where sizeOf(A)=sizeOf(B) = S x S
+1. Divide A into a block of size mc x kc and B into a panel of kc x S
+2. Multiply _mr_ rows of the block A with _nr_ columns of the panel B.
+3. This gives a _mr_ x _nr_ block of B.
+
+According to the paper referred to in the exercise the idea is that _mr_ x _nr_ remain in registers to amortize costs of not having packed matrix C. KNL has a total of 32 x 512bit registers per hardware thread. Each register can pack 8 doubles. Hence if we use half the registers to allow space for prefetching A and B we have a total of 16x8 doubles that can be stored. Typically _mr_ equal to _nr_ is preferred. Hence we chose _mr_=_nr_=8 which gave us the best performance.
+
+Elements of B are reused and hence must remain in L1 cache. As a result nr x kc must be large enough to fill up atleast half of the cache. nr is already small from what we chose above so kc needs to be sufficiently large. The L1 data cache for KNL is 32KB per core. In order for elements of B to not be evicted from L1 it needs to occupy less that 50% of L1. Keeping this consideration in mind we chose kc to 256. However after results kc=128 gave better results specially after parallelization. One possible reason for this is that each core is shared by four hardware threads which means L1 cache available to a single hardware thread is further reduced. Finally mc is chosen in such a way that it fill up most of the L2 cache. For us the experience was slightly different and a smaller mc of 128 functioned better than the recommended 256-512.
+
+So to summarise we the following variables were chose: **mr=8nr=8mc=128kc=128**. With this configuration our **GEMM had a peak performance of about 20 GFLOPS**. While the microkernel alone had a peak performance of about 33 GFLOPS (libxsmm).
+
+### Part 2: Parallelization
+Setting the number of threads (`OMP_NUM_THREADS`) to 64 gave the best results. Further increase in threads decreased the performance. Also, **4 threads per team** seem gave the best performance. This is because of hyperthreading and better L1 cache utilization for the packed B matrix (Since L1 is shared between hyperthreads).
+This settings gave us a **peak performance of about 334 GFLOPS**
+
+### Part 3: Strong scaling analyses <TODO>
