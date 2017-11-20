@@ -1,0 +1,80 @@
+di34mit@mpp3-login8:~/code/HPC-Lab/assig2> mpiexec -n 1 ./dgemm 4096 0 4 2
+Num threads allowed: 64
+nTeams: 16
+threadsPerTeam: 4
+Microkernel: 1944.603135 ms, 21.568946 GFLOP/s
+GEBP: 6.519680 ms, 41.173103 GFLOP/s
+GEMM: 783.114610 ms, 351.005975 GFLOP/s
+===================================================
+di34mit@mpp3-login8:~/code/HPC-Lab/assig2> mpiexec -n 1 ./dgemm 4096 0 4 2
+Num threads allowed: 1
+nTeams: 1
+threadsPerTeam: 1
+Microkernel: 2278.346089 ms, 18.409424 GFLOP/s
+GEBP: 12.651143 ms, 21.218277 GFLOP/s
+GEMM: 14488.153409 ms, 18.972598 GFLOP/s
+==================================================
+Threads Analysis
+==================================================
+di34mit@mpp3-login8:~/code/HPC-Lab/assig2> mpiexec -n 1 ./dgemm 4096 0 4 2
+Num threads allowed: 16
+nTeams: 4
+threadsPerTeam: 4
+Microkernel: 1958.720894 ms, 21.413485 GFLOP/s
+GEBP: 6.928445 ms, 38.743969 GFLOP/s
+GEMM: 1780.500542 ms, 154.382378 GFLOP/s
+==================================================
+Num threads allowed: 32
+nTeams: 8
+threadsPerTeam: 4
+Microkernel: 1932.050548 ms, 21.709080 GFLOP/s
+GEBP: 6.180196 ms, 43.434780 GFLOP/s
+GEMM: 1086.257170 ms, 253.050488 GFLOP/s
+=================================================
+Num threads allowed: 64
+nTeams: 16
+threadsPerTeam: 4
+Microkernel: 1947.392060 ms, 21.538056 GFLOP/s
+GEBP: 6.878950 ms, 39.022737 GFLOP/s
+GEMM: 807.860796 ms, 340.254049 GFLOP/s
+=================================================
+Num threads allowed: 128
+nTeams: 32
+threadsPerTeam: 4
+Microkernel: 1978.036806 ms, 21.204378 GFLOP/s
+GEBP: 6.695997 ms, 40.088945 GFLOP/s
+GEMM: 743.992423 ms, 369.463315 GFLOP/s
+=================================================
+Num threads allowed: 150
+nTeams: 37
+threadsPerTeam: 4
+Microkernel: 1963.676817 ms, 21.359441 GFLOP/s
+GEBP: 5.483106 ms, 48.956824 GFLOP/s
+GEMM: 963.254420 ms, 285.363764 GFLOP/s
+=================================================
+Num threads allowed: 256
+nTeams: 64
+threadsPerTeam: 4
+Microkernel: 1951.274898 ms, 21.495198 GFLOP/s
+GEBP: 5.849021 ms, 45.894083 GFLOP/s
+GEMM: 991.023726 ms, 277.367635 GFLOP/s
+=================================================
+Problem size test. Num Threads = 64
+=================================================
+Problem Size 256
+GEMM: 2.259831 ms, 29.696408 GFLOP/s
+=================================================
+Problem Size 512
+GEMM: 6.054335 ms, 88.675455 GFLOP/s
+=================================================
+Problem Size 1024
+GEMM: 25.664706 ms, 167.349172 GFLOP/s
+=================================================
+Problem Size 2048
+GEMM: 96.552066 ms, 355.867459 GFLOP/s
+=================================================
+Problem Size 4096
+GEMM: 785.973451 ms, 349.729252 GFLOP/s
+=================================================
+Problem Size 8192
+GEMM: 12522.883529 ms, 175.600392 GFLOP/s
