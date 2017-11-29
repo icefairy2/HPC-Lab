@@ -30,8 +30,8 @@ TODO
 
 #### 4. Give a short explanation of the sub-benchmakrs in the *Intel MPI Benchmarks*
 
-#####MPI-1 Benchmarks: 
-######Single Transfer Benchmarks:
+##### MPI-1 Benchmarks: 
+###### Single Transfer Benchmarks:
 Single transfer benchmerks involve 2 active processes into communication and other processes wait fort he communication completion. The timing is averaged between 2 processes. Benchmarks are run with varying message lengths.
 
 *Throughput = X/time*
@@ -39,7 +39,7 @@ Single transfer benchmerks involve 2 active processes into communication and oth
 
 e.g. *PingPong*
 
-######Parallel Transfer Benchmarks:
+###### Parallel Transfer Benchmarks:
 Parallel transfer benchmarkt involve more than 2 active processes into communication. Benchmarks are run with varying message lengths. The timing is averaged over multiple samples.
 
 *Throughput = nmsg*X/time*
@@ -47,43 +47,43 @@ Parallel transfer benchmarkt involve more than 2 active processes into communica
 
 e.g. *Sendrecv*
 
-######Collective Benchmarks:
+###### Collective Benchmarks:
 Collective benchmarks measure MPI collective operations. Benchmarks are run with varying message lengths. The timing is averaged over multiple samples.
 Collective benchmarks show bare timings.
 
 e.g. *Bcast*
 
-#####MPI-2 Benchmarks:
+##### MPI-2 Benchmarks:
 MPI-2 Benchmarks contain benchmarks fort wo components: *IMB-EXT* and *IMB-IO*
 
-######Single Transfer Benchmarks:
+###### Single Transfer Benchmarks:
 Contains benchmarks of functions that operate on a single date element transferred between one source and one target. 
 Single transfer *IMB-EXT* benchmarks run with 2 active prosecces, *IMB-IO* benchmarks with 1 active process.
 
 e.g. *Unidir_Get*
 
-######Parallel Transfer Benchmarks:
+###### Parallel Transfer Benchmarks:
 Contains benchmarks of function that operate on several processes in parallel. Benchmark timings are produced under a global load and the number of processes is arbitrary.
 More than one process participates in the overall pattern.
 The final time is measured as the maximum of timings for all single processes and the throughput is related tot hat time and the total amount of transferred data.
 
 e.g. *Multi_Unidir_Get*
 
-######Collective Benchmarks:
+###### Collective Benchmarks:
 Contains benchmarks of functions that are collective as provided by the MPI standard. The final time is measured as the maximum of timings for all single processes and the throughput is not calculated.
 
 e.g. *Accumulate*
 
-#####MPI-3 Benchmarks
+##### MPI-3 Benchmarks
 Contains two sets of benchmarks conforming the MPI-3 standard:
 *IMB-NBC* - benchmarks for nonblocking collective (NBC) operations
 *IMB-RMA* – one-sided communication benchmarkst hat measure Remote Memory Access functionality
 
-######IMB-NBC:
+###### IMB-NBC:
 Contains benchmarks for measuiring the overlap of communication and computation (e.g. Ibcast) and benchmarks for measuring the pure communication time (e.g. Ibcast_pure).
 
-######IMB-RMA:
-######Single Transfer Benchmarks:
+###### IMB-RMA:
+###### Single Transfer Benchmarks:
 One process accesses the memory of another process in unidirectional or bidirectional manner.
 Benchmarks run on 2 active processes.
 
@@ -91,7 +91,7 @@ Benchmarks run on 2 active processes.
 
 e.g. *Unidir_put*
 
-######Multiple Transfer Benchmarks:
+###### Multiple Transfer Benchmarks:
 One process accesses the memory of several other processes.
 
 *Throughput = X/time * N*
@@ -99,7 +99,7 @@ One process accesses the memory of several other processes.
 
 e.g. *One_put_all*
 
-######Parallel Transfer benchmarks:
+###### Parallel Transfer benchmarks:
 Contains benchmarkst hat operate on several processes in parallel. Benchmarks show bare timing values: maximum, minimum and average time among all the ranks participating in the measurements.
 
 e.g. *All_put_all*
