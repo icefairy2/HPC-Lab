@@ -79,7 +79,7 @@ void pack_A_v2(double *A, double *A_pack, int S) {
   * C: M x N, ld S
   */
 void microkernel(double* A, double* B, double* C, int S) {
-  kernel_M128_N128_K128_S2048_knl(A, B, C);
+  kernel_M8_N8_K256_S32768_knl(A, B, C);
 }
 
 /**
@@ -92,16 +92,16 @@ void GEBP(double* A, double* B, double* C, double* A_pack, int S, int threadsPer
 	
 	// pack A
   pack_A_v2(A, A_pack, S); // We pack A in such a manner that the access to every MxK block is contiguous
-	pack_A(A, A_pack, S);
+	// pack_A(A, A_pack, S);
 	#pragma omp parallel for num_threads(threadsPerTeam)
 	for (int n = 0; n < S; n += N) {
-		//for (int m = 0; m < MC; m += M) { // For using mr number of rows
+		for (int m = 0; m < MC; m += M) { // For using mr number of rows
       //int tid = omp_get_thread_num();
       //printf("Level %d: number of threads in the team %d- %d\n",
       //          2,  tid,omp_get_num_threads());
-      // microkernel(&A_pack[m], &B[n*K], &C[n*S + m], S);
-      microkernel(A_pack, &B[n*K], &C[n*S], S);
-    //}
+      microkernel(&A_pack[m*K], &B[n*K], &C[n*S + m], S);
+      //microkernel(A_pack, &B[n*K], &C[n*S], S);
+    }
 	}
 }
 
