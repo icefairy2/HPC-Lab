@@ -1,0 +1,109 @@
+# Assignment 3
+
+
+## Part 2: 
+### Probing the network
+#### 1. Do a literature research on the Omni-Path in general and the Omni-Path network used in the Linux Cluster. 
+
+Omni-Path is a high-performance communication architecture by Intel. It competes with InfiniBand and is designed specifically for HPC clusters. Omni-Path and InfiniBand both run at 100Gbps but Omni-Path implements a few optimizations for HPC applications. These include changing the Forward Error Correction in the Link Transfer Layer for Link Transfer Packets to a simple 14-bit CRC, which reduces latencies. It also includes Traffic Flow Optimization, which allows sending multiple Messages in a single packet and Quality of Service changes, that allow the interruption of transmissions in order to send high priority messages. New routing options like Adaptive Routing and Dispersive Routing were also introduced.
+
+The Linux Cluster consists of 148 nodes with *Intel Xeon Phi 7210-F* processors, that have intergrated 2 port Omni-Path Fabrics. The nodes are connected by 10 + 4 48 port *100SWE48* switches, that support data rates of 100Gbps per port. The Omnipath network has a Fat-Tree-Topology. The compute nodes are connected within the Ompi-Path fabric via the integrated 2 ports and the entire Omni-path fabric is connected with a blocking factor of 2:1. 
+
+#### 1. Explain why the bandwidth depends on the message size
+
+*Data transfer time = latency + message size / bandwith*
+For short messages the latency dominates the transfer time and for long messages the bandwith term dominates. For MPI applications a larger message size often yields better performance due to the high available bandwith. Omni-Path supports MTU sizes from *2048B* up to *8192B*, so it benefits from larger message sizes.
+
+#### 1. What latencies and peak bandwidths can you expect?
+
+The peak bandwidth of each port is 100 Gbps and the bidirectional bandwith of a node to the Interconnect is 25 Gbps.
+The bisection bandwidth of the Interconnect is 1.6 TB/s.
+The latency oft he Interconnect is 2.3µs.
+
+#### 2. Draw a picture of the topology
+
+![alt text](https://i.imgur.com/OXUyta8.png "Cluster topology")
+
+#### 3. Compute the bisection width and bisection bandwidth of 16 nodes and of 32 nodes w.r.t. the topology. Assume that 16 nodes are connected to each leaf switch.
+
+TODO
+
+#### 4. Give a short explanation of the sub-benchmakrs in the *Intel MPI Benchmarks*
+
+#####MPI-1 Benchmarks: 
+######Single Transfer Benchmarks:
+Single transfer benchmerks involve 2 active processes into communication and other processes wait fort he communication completion. The timing is averaged between 2 processes. Benchmarks are run with varying message lengths.
+
+*Throughput = X/time*
+*X* is message length in byte
+
+e.g. *PingPong*
+
+######Parallel Transfer Benchmarks:
+Parallel transfer benchmarkt involve more than 2 active processes into communication. Benchmarks are run with varying message lengths. The timing is averaged over multiple samples.
+
+*Throughput = nmsg*X/time*
+*nmsg* is multiplicity of messages
+
+e.g. *Sendrecv*
+
+######Collective Benchmarks:
+Collective benchmarks measure MPI collective operations. Benchmarks are run with varying message lengths. The timing is averaged over multiple samples.
+Collective benchmarks show bare timings.
+
+e.g. *Bcast*
+
+#####MPI-2 Benchmarks:
+MPI-2 Benchmarks contain benchmarks fort wo components: *IMB-EXT* and *IMB-IO*
+
+######Single Transfer Benchmarks:
+Contains benchmarks of functions that operate on a single date element transferred between one source and one target. 
+Single transfer *IMB-EXT* benchmarks run with 2 active prosecces, *IMB-IO* benchmarks with 1 active process.
+
+e.g. *Unidir_Get*
+
+######Parallel Transfer Benchmarks:
+Contains benchmarks of function that operate on several processes in parallel. Benchmark timings are produced under a global load and the number of processes is arbitrary.
+More than one process participates in the overall pattern.
+The final time is measured as the maximum of timings for all single processes and the throughput is related tot hat time and the total amount of transferred data.
+
+e.g. *Multi_Unidir_Get*
+
+######Collective Benchmarks:
+Contains benchmarks of functions that are collective as provided by the MPI standard. The final time is measured as the maximum of timings for all single processes and the throughput is not calculated.
+
+e.g. *Accumulate*
+
+#####MPI-3 Benchmarks
+Contains two sets of benchmarks conforming the MPI-3 standard:
+*IMB-NBC* - benchmarks for nonblocking collective (NBC) operations
+*IMB-RMA* – one-sided communication benchmarkst hat measure Remote Memory Access functionality
+
+######IMB-NBC:
+Contains benchmarks for measuiring the overlap of communication and computation (e.g. Ibcast) and benchmarks for measuring the pure communication time (e.g. Ibcast_pure).
+
+######IMB-RMA:
+######Single Transfer Benchmarks:
+One process accesses the memory of another process in unidirectional or bidirectional manner.
+Benchmarks run on 2 active processes.
+
+*Throughput = X/time*
+
+e.g. *Unidir_put*
+
+######Multiple Transfer Benchmarks:
+One process accesses the memory of several other processes.
+
+*Throughput = X/time * N*
+*N* is number of target processes
+
+e.g. *One_put_all*
+
+######Parallel Transfer benchmarks:
+Contains benchmarkst hat operate on several processes in parallel. Benchmarks show bare timing values: maximum, minimum and average time among all the ranks participating in the measurements.
+
+e.g. *All_put_all*
+
+#### 5. Run the *Intel MPI Benchmarks* on the Linux Cluster using different number of nodes.
+
+TODO
