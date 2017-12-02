@@ -3,26 +3,37 @@
 
 ## Part 1:
 Amdahl's Law:
-![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B1%7D%7Bs%20%2B%5Cfrac%7B1%20-%20s%7D%7Bp%7D%20%7D%20%7D%20%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+     ![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B1%7D%7Bs%20%2B%5Cfrac%7B1%20-%20s%7D%7Bp%7D%20%7D%20%7D%20%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
 
-Parallel efficiency Eff = Sp/p
+Parallel efficiency 
+     Eff = Sp/p
 #### 1. Determine the maximum number of processes with s=10% and Eff>=70%.
 Given that the efficiency should be *at least* 70%, we start from the equation Eff >= 0.7, which is equivalent to: Sp/p >= 0.7
 
 Substituting the given values our equation has the following form:
 
-![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B%5Cfrac%7B1%7D%7B0.1%20%2B%5Cfrac%7B1%20-%200.1%7D%7Bp%7D%20%7D%20%7D%7Bp%7D%20%20%5Cgeq%200.7&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+     ![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B%5Cfrac%7B1%7D%7B0.1%20%2B%5Cfrac%7B1%20-%200.1%7D%7Bp%7D%20%7D%20%7D%7Bp%7D%20%20%5Cgeq%200.7&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
 
 Simplifying it we get to the relation:
 
-p <= 37/7 which is ~5.28
+     p <= 37/7, with 37/7=~5.28
 
 Having p <= 5.28, we conclude that the maximum number of processes p to achieve a parallel efficiency of at least 70%, having a sequential portion of 10% is:
-        
         pMax = 5
  
-   
-#### 2.
+#### 2. Explain why Amdahl's law is pessimistic. Are there other laws in order to classify the parallel behaviour of an application?
+In the previous section we saw that to achieve a parallel efficiency of at least 70% the maximum number of processes that could be used is 5. This is in fact a small number and larger numbers of processes would lead to less efficiency.
+We see that for large numbers of processes the speedup would only depend on the serial section of the application, having the form Sp = 1/s, thus the speedup becomes constant from a given p.
+Amdahl's law is pessimistic regarding massive parallel computation because the number of processes p has smaller weighing factor in determining the speedup than the sequential part of the code.
+The ideal linear speedup would be achieved if s = 0, in which case Sp = p, in other words Sp/p = 1 resulting in a 100% efficiency.
+When we increase the value of s at around 20% we already get Sp < 5 independently from p. Here, the efficiency decreases with increasing value of p.
+
+Amdahl's law assumes the problem size to remain constant, but in most cases bigger computers are used to solve bigger problems, not to solve old problems faster. Small fractions of sequential code are often inevitable (i.e. reading input data). 
+In these cases by Amdahl's law if the sequential part of the program does not increase when increasing the input (or increases sublinearly) applications can run on a large number of cores, even if the speedup remains constant from a given number of processes.
+
+Another law to classify the parallel behaviour of an application is Gustafson's law. Its formula looks like the following:
+        Sp = p + (1 - p) * s
+While Amdahl's law gives the theoretical speedup in latency of the execution of a task at fixed workload, Gustaffson's law fixes the execution time.
 
 ## Part 2: 
 ### Probing the network
