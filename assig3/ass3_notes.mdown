@@ -63,7 +63,10 @@ The latency oft he Interconnect is 2.3µs.
 
 #### 3. Compute the bisection width and bisection bandwidth of 16 nodes and of 32 nodes w.r.t. the topology. Assume that 16 nodes are connected to each leaf switch.
 
-TODO
+To separate the network into two equal parts, we would have to cut a minimum amount of 20 edges which are between 2-2 spine switches being connected to 5 leaf switches on one side, and cutting the connection to the other half.
+This way, the bisection width would be equal to 20.
+The bisection bandwidth is the sum of the single badwidth of all edges along the cut, and because the edges were 4 port links, we would have 20 * 4 * (bandwith).
+In our case the bandwith is 100Gbit so the final value of the bisection bandwidth is 8000 Gbit.
 
 #### 4. Give a short explanation of the sub-benchmakrs in the *Intel MPI Benchmarks*
 
