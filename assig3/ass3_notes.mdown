@@ -3,7 +3,7 @@
 
 ## Part 1:
 Amdahl's Law:
-     ![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B1%7D%7Bs%20%2B%5Cfrac%7B1%20-%20s%7D%7Bp%7D%20%7D%20%7D%20%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B1%7D%7Bs%20%2B%5Cfrac%7B1%20-%20s%7D%7Bp%7D%20%7D%20%7D%20%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
 
 Parallel efficiency 
      Eff = Sp/p
