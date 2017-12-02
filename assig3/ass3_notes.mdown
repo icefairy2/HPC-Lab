@@ -4,17 +4,24 @@
 ## Part 1:
 Amdahl's Law:
 ![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B1%7D%7Bs%20%2B%5Cfrac%7B1%20-%20s%7D%7Bp%7D%20%7D%20%7D%20%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+
 Parallel efficiency Eff = Sp/p
 #### 1. Determine the maximum number of processes with s=10% and Eff>=70%.
-Given that the efficiency should be *at least* 70%, we start from the equation:
-Eff >= 0.7, which is equivalent to: Sp/p >= 0.7
+Given that the efficiency should be *at least* 70%, we start from the equation Eff >= 0.7, which is equivalent to: Sp/p >= 0.7
+
 Substituting the given values our equation has the following form:
+
 ![equation](http://www.sciweavers.org/tex2img.php?eq=%20%5Cfrac%7B%5Cfrac%7B1%7D%7B0.1%20%2B%5Cfrac%7B1%20-%200.1%7D%7Bp%7D%20%7D%20%7D%7Bp%7D%20%20%5Cgeq%200.7&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+
 Simplifying it we get to the relation:
+
 p <= 37/7 which is ~5.28
+
 Having p <= 5.28, we conclude that the maximum number of processes p to achieve a parallel efficiency of at least 70%, having a sequential portion of 10% is:
-        pMax = 5
         
+        pMax = 5
+ 
+   
 #### 2.
 
 ## Part 2: 
