@@ -130,15 +130,15 @@ void init_grid(double* grid)
 }
 
 /**
- * initializes the right hand side, we want to keep it simple and
- * solve the Laplace equation instead of Poisson (-> b=0)
+ * initializes the righ * solve the Laplace equation instead of Poisson (-> b=0)
+t hand side, we want to keep it simple and
  *
  * @param b the right hand side
  */
 void init_b(double* b)
 {
 	// set all points to zero
-	for (int i = 0; i < grid_points_1d*grid_points_1d; i++)
+	for (int i = 0; i < grid_points_1d; i++)
 	{
 		b[i] = 0.0;
 	}
@@ -287,6 +287,7 @@ std::size_t solve(double* grid, double* b, std::size_t cg_max_iterations, double
 
 	// calculate starting norm
 	delta_new = g_dot_product(r, r);
+	printf("%0.10f\n", delta_new);
 	delta_0 = delta_new*eps_squared;
 	residuum = (delta_0/eps_squared);
 	
@@ -340,6 +341,17 @@ std::size_t solve(double* grid, double* b, std::size_t cg_max_iterations, double
 	_mm_free(b_save);
 }
 
+void print_grid(double* o_grid, std::size_t size) {
+	printf("printing grid\n");
+	for (int i=0; i<size; i++) {
+		for (int j=0; j<size; j++) {
+			printf("%2d=%0.2f  ", (i* size) + (j), o_grid[(i* size) + (j)]);
+		}
+		printf("\n");
+	}
+	printf("end printing grid\n");
+}
+
 /**
  * main application
  *
@@ -378,13 +390,14 @@ int main(int argc, char* argv[])
 	store_grid(grid, "initial_condition.gnuplot");
 	init_b(b);
 	store_grid(b, "b.gnuplot");
-	
+
 	// solve Poisson equation using CG method
 	timer_start();
 	solve(grid, b, cg_max_iterations, cg_eps);
 	double time = timer_stop();
-	store_grid(grid, "solution.gnuplot");
-	
+	store_grid(grid, "solution_serial.gnuplot");
+	// Print the grid to compare solutions
+	// print_grid(grid, grid_points_1d);
 	std::cout << std::endl << "Needed time: " << time << " s" << std::endl << std::endl;
 	
 	_mm_free(grid);
