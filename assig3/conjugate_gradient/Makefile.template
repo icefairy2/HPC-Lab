@@ -1,6 +1,6 @@
 # TODO
 # Adjust these values, if necessary
-GRID_SIZE=128
+GRID_SIZE=${GRID_SIZE}
 
 CXX=mpicc
 CXXFLAGS=-O2 -xMIC-AVX512 # -qopenmp

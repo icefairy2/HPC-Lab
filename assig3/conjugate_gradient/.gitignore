@@ -1,3 +1,5 @@
 cg
 cg_serial
 *.gnuplot
+Makefile
+sbatch.final
