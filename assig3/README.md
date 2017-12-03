@@ -38,8 +38,8 @@ Another law to classify the parallel behaviour of an application is Gustafson's 
         
 While Amdahl's law gives the theoretical speedup in latency of the execution of a task at fixed workload, Gustaffson's law fixes the execution time.
 
-## Part 2: 
-### Probing the network
+## Part 2: Probing the network
+
 #### 1. Do a literature research on the Omni-Path in general and the Omni-Path network used in the Linux Cluster. 
 
 Omni-Path is a high-performance communication architecture by Intel. It competes with InfiniBand and is designed specifically for HPC clusters. Omni-Path and InfiniBand both run at 100Gbps but Omni-Path implements a few optimizations for HPC applications. These include changing the Forward Error Correction in the Link Transfer Layer for Link Transfer Packets to a simple 14-bit CRC, which reduces latencies. It also includes Traffic Flow Optimization, which allows sending multiple Messages in a single packet and Quality of Service changes, that allow the interruption of transmissions in order to send high priority messages. New routing options like Adaptive Routing and Dispersive Routing were also introduced.
