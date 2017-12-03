@@ -333,7 +333,7 @@ The method of conjugate gradients is an iterative method to solve a set of linea
 2. Dot product
 3. Scaling and Scaling and addition.
 
-As the size of grid A can get particularly large we wish to parallelize using a message passing interface to allow scaling for very large problem sizes. To parallelize we divide the grid A into smaller grid sizes and apply the above listed operations on each of the smaller grid. Operation 3 can be done directly on any matrix as this does not need any neighbouring data. For the dot product we do a dot product for each sub matrix and then accumulate it using a call to MPI_Reduce_All. For the 5 point finite difference stencil we need the data from the neighbours. For this we divide the processes into a grid topology exchange columns and rows between neighbouring processes using the cartesian coordinates.
+As the size of grid A can get particularly large we wish to parallelize using a message passing interface to allow scaling for very large problem sizes. To parallelize we divide the grid A into smaller grid sizes and apply the above listed operations on each of the smaller grid. Scaling and addition can be done directly on any matrix as this does not need any neighbouring data. For the dot product we do a dot product for each sub matrix and then accumulate it using a call to MPI_Reduce_All. For the 5 point finite difference stencil we need the data from the neighbours. For this we divide the processes into a grid topology exchange columns and rows between neighbouring processes using the cartesian coordinates.
 
 ### How to run
 To the run the program clone the repo and set the env variable CODE_HOME to the home of the repo. For example:
@@ -351,19 +351,34 @@ submit_job <PROCESS_GRID_SIZE> <MPI_TASKS> <INV_GRID_SIZE_1D> <MAX_ITR> <ERROR_L
 Example:
 
 ```
-# To run a job with 512x512 grid for each node and 256 processes for 
-# a grid size of 8192x8192
+# To run a job with 512x512 grid for each process and 
+# a total of 256 processes for a grid size of 8192x8192
 ./submit_job 512 256 0.0001220703125 10000 0.001 8192_512
 ```
 
 The logs are dumped into the `assig3/conjugate_gradient/logs` folder.
 
 ### Performance report
-The raw results for the performance can results be found under `assig3/conjugate_gradient/results.data`. We did two kind of experiments. In the first case we fixed the memory footprint of a single process by fixing the per process grid size (128x128) and kept changing the problem size from 128 to 16384. This allows us to evaluate if the algorithm scales for huge problem sizes (given adequate resources). The results can be seen summarized in the graph below.
+The raw results for the performance tests can be found under `assig3/conjugate_gradient/results.data`. We performed two types of tests. In the first case we fixed the memory footprint of a single process by fixing the grid size per process (128x128) and varied the problem size from 128x128 to 16384x16384. This allows us to evaluate if the algorithm scales for huge problem sizes (given adequate resources). The results can be seen summarized in the graph below.
 
 ![Experiment 1](conjugate_gradient/images/exp1.png)
+
+We can see a jump in time taken when the number of machines being used increases. This is understandable due to network costs.
 
 In the second experiment we kept the problem size fixed to 8192x8192 while changing the per process size of the grid from 64x64 (16384 processes) to 8192x8192 (1 process). This allows us to evaluate the performance with changing parallelism for the same problem size.
 
 ![Experiment 2](conjugate_gradient/images/exp2.png)
 
+Performance gain is almost linear at bigger process grid sizes. As the process grid size becomes smaller the gain becomes lesser due to the overhead in communication ie. efficiency drops down. Computing the efficieny between linear (process grid size 8192x8192) and process grid size 512x512 is:
+
+```
+(time_in_parallel/time_in_serial)/256 = 23%
+```
+
+Comparing this with the speedup we get for linear vs process grid size of 64
+
+```
+(time_in_parallel/time_in_serial)/16384 = 7%
+```
+
+So speedup decreases as the number of processes become very large (in the above scenario 128 nodes were running 16384 tasks).
