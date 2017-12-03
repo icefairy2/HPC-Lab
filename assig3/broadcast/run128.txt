@@ -1,0 +1,5 @@
+4 cases; 128 processes
+Longest Time for Naive was 39.220236 seconds; array=100000000; bwidth=20397633.598585 B/s
+Longest Time for Tree was 1.441020 seconds; array=100000000; bwidth=555162310.996751 B/s
+Longest Time for Bonus was 2.112662 seconds; array=100000000; bwidth=378669215.020269 B/s
+Longest Time for MPI_Bcast was 0.723280 seconds; array=100000000; bwidth=1106072409.000889 B/s
