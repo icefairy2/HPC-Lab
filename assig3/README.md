@@ -90,6 +90,7 @@ The throughput is measured in MBps.
 *throughput = X/time*
 
 *X* is message length in byte
+
 *time* is measured in μsec
 
 e.g. *PingPong*: Measures startup and throughput of a single message sent between 2 processes
