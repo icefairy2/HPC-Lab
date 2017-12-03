@@ -381,21 +381,22 @@ int main(int argc, char* argv[])
 	double cg_eps = atof(argv[3]);
 
 	// calculate grid points per dimension
-	grid_points_1d = (std::size_t)(1.0/mesh_width)+1;
+	// grid_points_1d = (std::size_t)(1.0/mesh_width)+1;
+	grid_points_1d = (std::size_t)(1.0/mesh_width);
 	
 	// initialize the gird and rights hand side
 	double* grid = (double*)_mm_malloc(grid_points_1d*grid_points_1d*sizeof(double), 64);
 	double* b = (double*)_mm_malloc(grid_points_1d*grid_points_1d*sizeof(double), 64);
 	init_grid(grid);
-	store_grid(grid, "initial_condition.gnuplot");
+	// store_grid(grid, "initial_condition.gnuplot");
 	init_b(b);
-	store_grid(b, "b.gnuplot");
+	// store_grid(b, "b.gnuplot");
 
 	// solve Poisson equation using CG method
 	timer_start();
 	solve(grid, b, cg_max_iterations, cg_eps);
 	double time = timer_stop();
-	store_grid(grid, "solution_serial.gnuplot");
+	// store_grid(grid, "solution_serial.gnuplot");
 	// Print the grid to compare solutions
 	// print_grid(grid, grid_points_1d);
 	std::cout << std::endl << "Needed time: " << time << " s" << std::endl << std::endl;

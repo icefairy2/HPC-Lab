@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --get-user-env 
+#SBATCH -o /home/hpc/t1221/di34mit/code/HPC-Lab/assig3/conjugate_gradient/logs/${FNAME}.%j.%N.out 
+#SBATCH -D /home/hpc/t1221/di34mit/code/HPC-Lab/assig3/conjugate_gradient
+#SBATCH -J CGPar
+#SBATCH --clusters=mpp3
+#SBATCH --nodes=${NNODES}
+#SBATCH --ntasks-per-node=128
+#SBATCH --mail-type=END
+#SBATCH --mail-user=sohaib.iftikhar@tum.de
+#SBATCH --time=01:00:00
+source /etc/profile.d/modules.sh
+mpiexec -n ${MPI_TASKS} ./cg ${INV_GRID_SIZE_1D} ${MAX_ITR} ${ERROR_LIMIT}

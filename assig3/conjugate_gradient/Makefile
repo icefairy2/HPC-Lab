@@ -1,9 +1,9 @@
 # TODO
 # Adjust these values, if necessary
-GRID_SIZE=43
+GRID_SIZE=128
 
 CXX=mpicc
-CXXFLAGS=-O0 -xMIC-AVX512 # -qopenmp
+CXXFLAGS=-O2 -xMIC-AVX512 # -qopenmp
 # LDFLAGS=-qopenmp
 DEFINES=-DGRID_SIZE=$(GRID_SIZE)
 SOURCES=poisson_par.cpp

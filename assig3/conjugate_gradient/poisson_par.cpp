@@ -197,11 +197,11 @@ void init_grid(double* grid)
 		coords[1] == 0 || coords[1] == procs_1d-1) 
 	{
 		double mesh_width = 1.0/((double)(grid_points_1d-1));
-	
+
 		for (int i = 0; i < GRID_SIZE; i++) 
 		{
-			double m = (coords[0] * procs_1d) + i;
-			double n = (coords[1] * procs_1d) + i;
+			double m = (coords[0] * GRID_SIZE) + i;
+			double n = (coords[1] * GRID_SIZE) + i;
 			// x-boundaries only set for extreme cols
 			// For first column
 			if (coords[1] == 0) {
@@ -548,15 +548,17 @@ std::size_t solve(double* grid, double* b, std::size_t cg_max_iterations, double
 		
 		residuum = delta_new;
 		needed_iters++;
-		if (cart_rank == 0) {
-			std::cout << "(iter: " << needed_iters << ")delta: " << delta_new << std::endl;
-		}
+		// if (cart_rank == 0) {
+		// 	std::cout << "(iter: " << needed_iters << ")delta: " << delta_new << std::endl;
+		// }
 	}
 	if (cart_rank == 0) {
 		std::cout << "Number of iterations: " << needed_iters << " (max. " << cg_max_iterations << ")" << std::endl;
 		std::cout << "Final norm of residuum: " << delta_new << std::endl;	
 	}	
 	
+	_mm_free(n_grid_data);
+	_mm_free(n_d_data);
 	_mm_free(d);
 	_mm_free(q);
 	_mm_free(r);
@@ -592,7 +594,8 @@ int main(int argc, char* argv[])
 	double cg_eps = atof(argv[3]);
 
 	// calculate grid points per dimension
-	grid_points_1d = (std::size_t)(1.0/mesh_width)+1;
+	// grid_points_1d = (std::size_t)(1.0/mesh_width)+1;
+	grid_points_1d = (std::size_t)(1.0/mesh_width);
 
 	/**
 	 * MPI intiliaze stuff
@@ -645,16 +648,24 @@ int main(int argc, char* argv[])
 	timer_start();
 	solve(grid, b, cg_max_iterations, cg_eps);
 	double time = timer_stop();
-	double* o_grid = collect_grid(grid);
 	// Now print it
-	/*if (cart_rank == 0)
-		print_grid(o_grid, grid_points_1d);*/
-	store_grid(o_grid, "solution.gnuplot");
-	std::cout << std::endl << "Needed time: " << time << " s" << std::endl << std::endl;
-	
+	double* o_grid = NULL;
+	// o_grid = collect_grid(grid);
+	if (cart_rank == 0) {
+		std::cout << std::endl << "Needed time: " << time << " s" << std::endl << std::endl;
+		// print_grid(o_grid, grid_points_1d);
+		// printf("Starting storage\n");
+		// store_grid(o_grid, "solution.gnuplot");
+		printf("Starting cleanup\n");
+	}
+	if (o_grid != NULL) _mm_free(o_grid);
+	MPI_Type_free(&vector_datatype);
+	MPI_Comm_free(&cartcomm);
 	_mm_free(grid);
-	_mm_free(o_grid);
 	_mm_free(b);
+	if (cart_rank == 0)
+		printf("Finished cleanup. Finalizing\n");
+	MPI_Finalize();
 
 	return 0;
 }
