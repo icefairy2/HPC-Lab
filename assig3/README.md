@@ -49,6 +49,7 @@ The Linux Cluster consists of 148 nodes with *Intel Xeon Phi 7210-F* processors,
 #### 1. Explain why the bandwidth depends on the message size
 
 *Data transfer time = latency + message size / bandwith*
+
 For short messages the latency dominates the transfer time and for long messages the bandwith term dominates. For MPI applications a larger message size often yields better performance due to the high available bandwith. Omni-Path supports MTU sizes from *2048B* up to *8192B*, so it benefits from larger message sizes.
 
 #### 1. What latencies and peak bandwidths can you expect?
@@ -65,7 +66,7 @@ The latency oft he Interconnect is 2.3µs.
 
 To separate the network into two equal parts, we would have to cut a minimum amount of 20 edges which are between 2-2 spine switches being connected to 5 leaf switches on one side, and cutting the connection to the other half.
 This way, the bisection width would be equal to 20.
-The bisection bandwidth is the sum of the single badwidth of all edges along the cut, and because the edges were 4 port links, we would have 20 * 4 * (bandwith).
+The bisection bandwidth is the sum of the single badwidth of all edges along the cut, and because the edges were 4 port links, we would have 20 * 4 * (bandwidth).
 In our case the bandwith is 100Gbit so the final value of the bisection bandwidth is 8000 Gbit.
 
 #### 4. Give a short explanation of the sub-benchmakrs in the *Intel MPI Benchmarks*
@@ -87,6 +88,7 @@ Single transfer benchmarks involve 2 active processes into communication and oth
 The throughput is measured in MBps.
 
 *throughput = X/time*
+
 *X* is message length in byte
 *time* is measured in μsec
 
@@ -99,6 +101,7 @@ Parallel transfer benchmarks involve more than 2 active processes into communica
 The throughput is measured in MBps.
 
 *throughput = nmsg*X/time*
+
 *nmsg* is multiplicity of messages
 
 e.g. *Sendrecv*: Processes form a periodic communication chain where each process sends a message to the right neighbor and receives a message from the left neighbor in the chain.
