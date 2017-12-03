@@ -75,7 +75,7 @@ struct bcast {
 
 double* init_array(const int n)
 {
-    double* v = malloc(n * sizeof(double));
+    double* v = malloc(n * sizeof(*v));
     for (int i = 0; i < n; i++)
         v[i] = i;
     return v;
@@ -89,17 +89,15 @@ int check_array(const double* v, const int n)
     return 1;
 }
 
-#define max(a, b) ((a) < (b) ? (b) : (a))
-
 int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    const int n = 10000000;
+    const int n = 100000000;
 
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    double* v = rank == 0 ? init_array(n) : calloc(sizeof(double), n);
+    double* v = rank == 0 ? init_array(n) : calloc(sizeof(*v), n);
 
     struct bcast bcasts[] = {
         { naive_bcast, "Naive" },
@@ -110,33 +108,24 @@ int main(int argc, char* argv[])
     const int cases = sizeof(bcasts) / sizeof(struct bcast);
 
     if (rank == 0)
-        printf("%d cases\n", cases);
+        printf("%d cases; %d processes\n", cases, size);
 
     for (int i = 0; i < cases; i++) {
+        MPI_Barrier(MPI_COMM_WORLD);
         double start = MPI_Wtime();
         bcasts[i].func(v, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
         double stop = MPI_Wtime();
 
         bcasts[i].duration = stop - start;
-        printf("For rank=%d; Time for %s was %lf seconds; array=%u; bwidth=%lf; check=%d\n",
-            rank, bcasts[i].name, bcasts[i].duration, n, (double)n / bcasts[i].duration, check_array(v, n));
+        if (!check_array(v, n))
+            printf("For rank=%d; %s failed", rank, bcasts[i].name);
     }
 
     if (rank == 0)
-        for (int i = 1; i < size; i++)
-            for (int j = 0; j < cases; j++) {
-                double duration;
-                MPI_Recv(&duration, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                bcasts[j].duration = max(bcasts[j].duration, duration);
-            }
-    else
         for (int i = 0; i < cases; i++)
-            MPI_Send(&bcasts[i].duration, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-        for (int i = 0; i < cases; i++)
-            printf("Longest Time for %s was %lf seconds; array=%u; bwidth=%lf\n",
-                bcasts[i].name, bcasts[i].duration, n, (double)n / bcasts[i].duration);
+            printf("Longest Time for %s was %lf seconds; array=%u; bwidth=%lf B/s\n",
+                bcasts[i].name, bcasts[i].duration, n, (double)n * sizeof(*v) / bcasts[i].duration);
 
     free(v);
     MPI_Finalize();

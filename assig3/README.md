@@ -94,11 +94,58 @@ for (int i = 1; i <= 2; i++)
         MPI_Send(buffer, count, datatype, rank*2+i, 0, comm);
 ```
 
+#### MPI_Bcast
+
+This is MPI's implementation of broadcast. We are simply calling it to
+compare our implementation's performance to it.
+
 ### Performance analysis
 
-Each process reports the time it spent on receiving and forwarding the array for each
-of the four approach. Then, the root process gathers the information and holds the
-longest time for each approach. It then reports the time, array length and bandwidth
-(array size / time) for each of the approaches.
+The root process records the time necessary for the whole broadcast. We first synchronize
+all the processes using `MPI_Barrier`, we start counting time and at the end of the
+broadcast method, we call the barrier again so that we measure the time after all
+processes have finished the procedure. This is repeated for all broadcast approaches.
 
-TBA
+```c
+for (int i = 0; i < cases; i++) {
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start = MPI_Wtime();
+    bcasts[i].func(v, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    double stop = MPI_Wtime();
+
+    bcasts[i].duration = stop - start;
+    if (!check_array(v, n))
+        printf("For rank=%d; %s failed", rank, bcasts[i].name);
+}
+```
+
+Finally, the root process reports the recorded times, array length and bandwidths.
+
+```c
+for (int i = 0; i < cases; i++)
+    printf("Longest Time for %s was %lf seconds; array=%u; bwidth=%lf B/s\n",
+        bcasts[i].name, bcasts[i].duration, n, (double)n * sizeof(*v) / bcasts[i].duration);
+```
+
+The analysis reports the following:
+
+64 processes, array size: 100000000 doubles:
+
+Approach | Time (s) | Bandwith (B/s)
+--- | --- | ---
+Naive | 19.347412 | 41349199
+Tree | 1.186976 | 673981638
+Bonus | 1.894390 | 422299502
+MPI_Bcast | 0.639517 | 1250943937
+
+128 processes, array size: 100000000 doubles:
+
+Approach | Time (s) | Bandwith (B/s)
+--- | --- | ---
+Naive | 39.220236 | 20397633
+Tree | 1.441020 | 555162310
+Bonus | 2.112662 | 378669215
+MPI_Bcast | 0.723280 | 1106072409
+
+The results can also be found in the `run64.txt` and `run128.txt` output files.
