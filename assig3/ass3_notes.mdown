@@ -173,3 +173,47 @@ For Bcast the growth rates for the different number of nodes are pretty similar.
 Except for the execution time for 32 nodes and 2097152 bytes, which seems to be spiking a bit. That could probably be neutralized using an even larger sample size.
 Also, for 8 nodes the time spikes for the two largest message sizes, which is due to a benchmark run averagin with 5522.02 µsecs and 8859.15 µsecs respectively.
 
+## Part 4: Conjugate Gradient
+
+In this problem  we solve the Laplacian equation using the method of conjugate gradients. The laplacian equation is given as ![Laplace Equation](https://wikimedia.org/api/rest_v1/media/math/render/svg/b51f1414b4dfef0f14977223726da95123d80f39)
+
+### Algorithm
+The method of conjugate gradients is an iterative method to solve a set of linear equations of the for `Ax = b`. Here is a symmetric (`A=A'`) and positive definite (`xAx > 0` for any non zero vector `x`) matrix. For the Laplace equation the vector b is a zero vector. The implementation for the algorithm requires three kinds of matrix operations.
+1. 5-point finite differences stencil
+2. Dot product
+3. Scaling and Scaling and addition.
+
+As the size of grid A can get particularly large we wish to parallelize using a message passing interface to allow scaling for very large problem sizes. To parallelize we divide the grid A into smaller grid sizes and apply the above listed operations on each of the smaller grid. Operation 3 can be done directly on any matrix as this does not need any neighbouring data. For the dot product we do a dot product for each sub matrix and then accumulate it using a call to MPI_Reduce_All. For the 5 point finite difference stencil we need the data from the neighbours. For this we divide the processes into a grid topology exchange columns and rows between neighbouring processes using the cartesian coordinates.
+
+### How to run
+To the run the program clone the repo and set the env variable CODE_HOME to the home of the repo. For example:
+
+```
+export CODE_HOME=~/code/HPC_Lab
+```
+
+Next using the submit_job script to compile and submit the job via sbatch. The script requires the following arguments:
+
+```
+submit_job <PROCESS_GRID_SIZE> <MPI_TASKS> <INV_GRID_SIZE_1D> <MAX_ITR> <ERROR_LIMIT> <LOG_FILE_NAME>
+```
+
+Example:
+
+```
+# To run a job with 512x512 grid for each node and 256 processes for 
+# a grid size of 8192x8192
+./submit_job 512 256 0.0001220703125 10000 0.001 8192_512
+```
+
+The logs are dumped into the `assig3/conjugate_gradient/logs` folder.
+
+### Performance report
+The raw results for the performance can results be found under `assig3/conjugate_gradient/results.data`. We did two kind of experiments. In the first case we fixed the memory footprint of a single process by fixing the per process grid size (128x128) and kept changing the problem size from 128 to 16384. This allows us to evaluate if the algorithm scales for huge problem sizes (given adequate resources). The results can be seen summarized in the graph below.
+
+![Experiment 1](conjugate_gradient/images/exp1.png)
+
+In the second experiment we kept the problem size fixed to 8192x8192 while changing the per process size of the grid from 64x64 (16384 processes) to 8192x8192 (1 process). This allows us to evaluate the performance with changing parallelism for the same problem size.
+
+![Experiment 2](conjugate_gradient/images/exp2.png)
+
