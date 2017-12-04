@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
     if (rank == 0)
         for (int i = 0; i < cases; i++)
             printf("Longest Time for %s was %lf seconds; array=%u; bwidth=%lf B/s\n",
-                bcasts[i].name, bcasts[i].duration, n, (double)n * sizeof(*v) / bcasts[i].duration);
+                bcasts[i].name, bcasts[i].duration, n, (double)n * sizeof(*v) * size / bcasts[i].duration);
 
     free(v);
     MPI_Finalize();

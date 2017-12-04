@@ -311,19 +311,19 @@ The analysis reports the following:
 
 Approach | Time (s) | Bandwith (B/s)
 --- | --- | ---
-Naive | 19.347412 | 41349199
-Tree | 1.186976 | 673981638
-Bonus | 1.894390 | 422299502
-MPI_Bcast | 0.639517 | 1250943937
+Naive | 19.347412 | 2646348736
+Tree | 1.186976 | 43134824832
+Bonus | 1.894390 | 27027168128
+MPI_Bcast | 0.639517 | 80060411968
 
 128 processes, array size: 100000000 doubles:
 
 Approach | Time (s) | Bandwith (B/s)
 --- | --- | ---
-Naive | 39.220236 | 20397633
-Tree | 1.441020 | 555162310
-Bonus | 2.112662 | 378669215
-MPI_Bcast | 0.723280 | 1106072409
+Naive | 39.220236 | 2610897024
+Tree | 1.441020 | 71060775680
+Bonus | 2.112662 | 48469659520
+MPI_Bcast | 0.723280 | 141577268352`
 
 The results can also be found in the `run64.txt` and `run128.txt` output files.
 
