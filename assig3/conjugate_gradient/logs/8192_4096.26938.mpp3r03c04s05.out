@@ -1,0 +1,9 @@
+Starting norm of residuum: 7.28084e-13
+Target norm:               7.28084e-19
+Number of iterations: 1575 (max. 10000)
+Final norm of residuum: 7.27732e-19
+
+Needed time: 443.059 s
+
+Starting cleanup
+Finished cleanup. Finalizing

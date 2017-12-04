@@ -1,24 +1,31 @@
 #!/bin/bash
 
-if [ $# -ne 5 ]; then
-    echo "Usage: submit_job <MPI_TASKS> <INV_GRID_SIZE_1D> <MAX_ITR> <ERROR_LIMIT> <LOG_FILE_NAME>"
+if [ $# -ne 6 ]; then
+    echo "Usage: submit_job <PROCESS_GRID_SIZE> <MPI_TASKS> <INV_GRID_SIZE_1D> <MAX_ITR> <ERROR_LIMIT> <LOG_FILE_NAME>"
     exit 1
 fi
 
-MPI_TASKS=$1
-INV_GRID_SIZE_1D=$2
-MAX_ITR=$3
-ERROR_LIMIT=$4
-FNAME=$5
+GRID_SIZE=$1
+MPI_TASKS=$2
+INV_GRID_SIZE_1D=$3
+MAX_ITR=$4
+ERROR_LIMIT=$5
+FNAME=$6
+: "${CODE_HOME:?Env variable CODE_HOME must be set to point to the repository root}"
+echo $CODE_HOME
 NNODES=`python -c "from math import ceil; print int(ceil($MPI_TASKS/128.0))"`
 
+sed -e "s/\${GRID_SIZE}/${GRID_SIZE}/" Makefile.template > Makefile
+
+make
+
 sed -e "s/\${MPI_TASKS}/${MPI_TASKS}/" \
+    -e "s/\${CODE_HOME}/${CODE_HOME//\//\\/}/" \
     -e "s/\${INV_GRID_SIZE_1D}/${INV_GRID_SIZE_1D}/" \
     -e "s/\${MAX_ITR}/${MAX_ITR}/" \
     -e "s/\${ERROR_LIMIT}/${ERROR_LIMIT}/" \
     -e "s/\${NNODES}/${NNODES}/" \
     -e "s/\${FNAME}/${FNAME}/" sbatch.template > sbatch.final
-
 
 ## Run using sbatch
 sbatch sbatch.final

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --get-user-env 
-#SBATCH -o /home/hpc/t1221/di34mit/code/HPC-Lab/assig3/conjugate_gradient/logs/${FNAME}.%j.%N.out 
-#SBATCH -D /home/hpc/t1221/di34mit/code/HPC-Lab/assig3/conjugate_gradient
+#SBATCH -o ${CODE_HOME}/assig3/conjugate_gradient/logs/${FNAME}.%j.%N.out 
+#SBATCH -D ${CODE_HOME}/assig3/conjugate_gradient
 #SBATCH -J CGPar
 #SBATCH --clusters=mpp3
 #SBATCH --nodes=${NNODES}
