@@ -98,3 +98,74 @@ use AVX instructions? l2 misses? reduce unused uops cycles?
 
 ### 2. The file dtrmv.cpp contains a routine for upper-triangular matrix times vector multiplication. We want to investigate possible load imbalances, as the routine does not scale well to multiple cores.
 
+#### a. Calculate the number of flops for every core manually and explain the load imbalance
+
+Flops for upper-triangular matrix * vector are $$O(2*(\sum_{i=0}^{N} N-i))$$
+
+One *Intel Xeon E5-2697 v3* has 14 cores. 
+
+Total number of flops: 100010000 flops  
+
+Calculating the Number of flops for 14 threads in dtrmv function:
+
+The outer loop is divided equally:
+
+*#pragma omp parallel for*  
+*for (int i = 0; i < N; ++i)*
+
+10000/14 = 714 R:4
+
+4 cores execute 715 loop runs, 10 execute 714 loop runs.
+
+Core 0 executes loop runs i=0 to i=714  
+Core 1: 715 to 1429  
+Core 2: 1430 to 2144  
+Core 3: 2145 to 2859  
+Core 4: 2860 to 3573  
+Core 5: 3574 to 4287  
+Core 6: 4288 to 5001  
+Core 7: 5002 to 5715  
+Core 8: 5716 to 6429  
+Core 9: 6420 to 7143  
+Core 10: 7144 to 7857  
+Core 11: 7858 to 8571  
+Core 12: 8572 to 9285  
+Core 13: 9286 to 9999  
+
+Then we can calculate the number of flops per core using $$O(2*(\sum_{i=start}^{end} N-i))$$
+
+For Core 0:
+$$2*(\sum_{i=0}^{714} 10000-i)= 2 * 6894745 = 13789490 flops$$
+
+Core 0: 13789490 flops  
+Core 1: 12767040 flops  
+Core 2: 11744590 flops  
+Core 3: 10722140 flops  
+Core 4: 9686838 flops  
+Core 5: 8667246 flops  
+Core 6: 7647654 flops  
+Core 7: 6628062 flops  
+Core 8: 5608470 flops  
+Core 9: 4660388 flops  
+Core 10: 3569286 flops  
+Core 11: 2549694 flops  
+Core 12: 1530102 flops  
+Core 13: 510510 flops  
+
+Because the matrix is upper-triangular every chunk has a different number of flops using the default static scheduler. So every core has to execute less flops then the previous one even though the chunk size is the same.
+This means that core 13 is most likely finished a long time before core 0 is.
+This is the load imbalance.
+
+#### b. Instead of hand calculation, it would be convenient to use hardware counters for the number of flops. However, these are known to be inexact since Sandy Bridge. Insert a marker for the dtrmv routine and measure the number of flops using LIKWID. Repeat the measurement for different numbers of threads. Are the measurements
+useful to find the load imbalance?
+
+Haswell has no FLOP events, only AVX_INSTS  
+Using FLOPS_AVX
+
+cpp file is prepared for execution and should compile
+
+#### c. Is *INSTR RETIRED ANY* a useful alternative?
+
+#### d. Modify the program such that the load is approximately balanced.
+
+dynamic scheduler

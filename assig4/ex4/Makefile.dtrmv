@@ -1,6 +1,11 @@
+LIKWID_INCLUDE=/lrz/sys/tools/likwid/likwid-4.1/bin/../include/
+LIKWID_LIB=/lrz/sys/tools/likwid/likwid-4.1/bin/../lib/
+
+LIKWID_FLAGS = -DLIKWID_PERFMON -L$(LIKWID_LIB) -I$(LIKWID_INCLUDE) -llikwid
+
 CXX=icpc
-CXXFLAGS=-O3 -xHost -qopenmp
-LDFLAGS=-qopenmp
+CXXFLAGS=-O3 -xHost -qopenmp -pthread $(LIKWID_FLAGS)
+LDFLAGS=-qopenmp $(LIKWID_FLAGS)
 DEFINES=
 SOURCES=dtrmv.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

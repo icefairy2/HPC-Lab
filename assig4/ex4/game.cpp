@@ -4,9 +4,9 @@
 #include "Stopwatch.h"
 
 // This block enables to compile the code with and without the likwid header in place
-//#ifdef LIKWID_PERFMON
+#ifdef LIKWID_PERFMON
 #include <likwid.h>
-/*#else
+#else
 #define LIKWID_MARKER_INIT
 #define LIKWID_MARKER_THREADINIT
 #define LIKWID_MARKER_SWITCH
@@ -15,7 +15,7 @@
 #define LIKWID_MARKER_STOP(regionTag)
 #define LIKWID_MARKER_CLOSE
 #define LIKWID_MARKER_GET(regionTag, nevents, events, time, count)
-#endif*/
+#endif
 
 class RigidBody {
 public:
