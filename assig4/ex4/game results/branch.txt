@@ -1,0 +1,33 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz
+CPU type:	Intel Xeon Haswell EN/EP/EX processor
+CPU clock:	2.60 GHz
+--------------------------------------------------------------------------------
+Region gravity, Group 1: BRANCH
++-------------------+----------+
+|    Region Info    |  Core 0  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.006475 |
+|     call count    |    10    |
++-------------------+----------+
++------------------------------+---------+----------+
+|             Event            | Counter |  Core 0  |
++------------------------------+---------+----------+
+|       INSTR_RETIRED_ANY      |  FIXC0  |  566603  |
+|     CPU_CLK_UNHALTED_CORE    |  FIXC1  | 15654680 |
+|     CPU_CLK_UNHALTED_REF     |  FIXC2  | 11303970 |
+| BR_INST_RETIRED_ALL_BRANCHES |   PMC0  |   70789  |
+| BR_MISP_RETIRED_ALL_BRANCHES |   PMC1  |    275   |
++------------------------------+---------+----------+
++----------------------------+-----------+
+|           Metric           |   Core 0  |
++----------------------------+-----------+
+|     Runtime (RDTSC) [s]    |   0.0065  |
+|    Runtime unhalted [s]    |   0.0060  |
+|         Clock [MHz]        | 3600.7238 |
+|             CPI            |  27.6290  |
+|         Branch rate        |   0.1249  |
+|  Branch misprediction rate |   0.0005  |
+| Branch misprediction ratio |   0.0039  |
+|   Instructions per branch  |   8.0041  |
++----------------------------+-----------+

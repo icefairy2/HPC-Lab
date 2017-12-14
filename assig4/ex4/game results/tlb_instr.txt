@@ -1,0 +1,32 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz
+CPU type:	Intel Xeon Haswell EN/EP/EX processor
+CPU clock:	2.60 GHz
+--------------------------------------------------------------------------------
+Region gravity, Group 1: TLB_INSTR
++-------------------+----------+
+|    Region Info    |  Core 0  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.006696 |
+|     call count    |    10    |
++-------------------+----------+
++---------------------------+---------+----------+
+|           Event           | Counter |  Core 0  |
++---------------------------+---------+----------+
+|     INSTR_RETIRED_ANY     |  FIXC0  |  566602  |
+|   CPU_CLK_UNHALTED_CORE   |  FIXC1  | 16326920 |
+|    CPU_CLK_UNHALTED_REF   |  FIXC2  | 11793180 |
+| ITLB_MISSES_CAUSES_A_WALK |   PMC0  |    795   |
+| ITLB_MISSES_WALK_DURATION |   PMC1  |   41575  |
++---------------------------+---------+----------+
++-----------------------------+-----------+
+|            Metric           |   Core 0  |
++-----------------------------+-----------+
+|     Runtime (RDTSC) [s]     |   0.0067  |
+|     Runtime unhalted [s]    |   0.0063  |
+|         Clock [MHz]         | 3599.5536 |
+|             CPI             |  28.8155  |
+|        L1 ITLB misses       |    795    |
+|      L1 ITLB miss rate      |   0.0014  |
+| L1 ITLB miss duration [Cyc] |  52.2956  |
++-----------------------------+-----------+

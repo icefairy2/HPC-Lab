@@ -1,0 +1,38 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz
+CPU type:	Intel Xeon Haswell EN/EP/EX processor
+CPU clock:	2.60 GHz
+--------------------------------------------------------------------------------
+Region gravity, Group 1: ICACHE
++-------------------+----------+
+|    Region Info    |  Core 0  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.006574 |
+|     call count    |    10    |
++-------------------+----------+
++-----------------------+---------+----------+
+|         Event         | Counter |  Core 0  |
++-----------------------+---------+----------+
+|   INSTR_RETIRED_ANY   |  FIXC0  |  574753  |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 15956840 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 11523880 |
+|    ICACHE_ACCESSES    |   PMC0  |  371979  |
+|     ICACHE_MISSES     |   PMC1  |   2604   |
+|  ICACHE_IFETCH_STALL  |   PMC2  |   52781  |
+|   ILD_STALL_IQ_FULL   |   PMC3  |  165365  |
++-----------------------+---------+----------+
++---------------------------+-----------+
+|           Metric          |   Core 0  |
++---------------------------+-----------+
+|    Runtime (RDTSC) [s]    |   0.0066  |
+|    Runtime unhalted [s]   |   0.0061  |
+|        Clock [MHz]        | 3600.1862 |
+|            CPI            |  27.7630  |
+|      L1I request rate     |   0.6472  |
+|       L1I miss rate       |   0.0045  |
+|       L1I miss ratio      |   0.0070  |
+|         L1I stalls        |   52781   |
+|       L1I stall rate      |   0.0918  |
+|   L1I queue full stalls   |   165365  |
+| L1I queue full stall rate |   0.2877  |
++---------------------------+-----------+

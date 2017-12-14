@@ -1,0 +1,36 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz
+CPU type:	Intel Xeon Haswell EN/EP/EX processor
+CPU clock:	2.60 GHz
+--------------------------------------------------------------------------------
+Region gravity, Group 1: L2
++-------------------+----------+
+|    Region Info    |  Core 0  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.007038 |
+|     call count    |    10    |
++-------------------+----------+
++-----------------------+---------+----------+
+|         Event         | Counter |  Core 0  |
++-----------------------+---------+----------+
+|   INSTR_RETIRED_ANY   |  FIXC0  |  570685  |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 17024480 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 12314690 |
+|    L1D_REPLACEMENT    |   PMC0  |  212191  |
+|    L2_TRANS_L1D_WB    |   PMC1  |  106515  |
+|     ICACHE_MISSES     |   PMC2  |   2719   |
++-----------------------+---------+----------+
++--------------------------------+-----------+
+|             Metric             |   Core 0  |
++--------------------------------+-----------+
+|       Runtime (RDTSC) [s]      |   0.0070  |
+|      Runtime unhalted [s]      |   0.0065  |
+|           Clock [MHz]          | 3594.4037 |
+|               CPI              |  29.8317  |
+|  L2D load bandwidth [MBytes/s] | 1929.6519 |
+|  L2D load data volume [GBytes] |   0.0136  |
+| L2D evict bandwidth [MBytes/s] |  968.6408 |
+| L2D evict data volume [GBytes] |   0.0068  |
+|     L2 bandwidth [MBytes/s]    | 2923.0191 |
+|     L2 data volume [GBytes]    |   0.0206  |
++--------------------------------+-----------+

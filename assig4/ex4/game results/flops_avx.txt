@@ -1,0 +1,30 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz
+CPU type:	Intel Xeon Haswell EN/EP/EX processor
+CPU clock:	2.60 GHz
+--------------------------------------------------------------------------------
+Region gravity, Group 1: FLOPS_AVX
++-------------------+----------+
+|    Region Info    |  Core 0  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.006997 |
+|     call count    |    10    |
++-------------------+----------+
++-----------------------+---------+----------+
+|         Event         | Counter |  Core 0  |
++-----------------------+---------+----------+
+|   INSTR_RETIRED_ANY   |  FIXC0  |  562523  |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 17145930 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 12381670 |
+|     AVX_INSTS_CALC    |   PMC0  |     0    |
++-----------------------+---------+----------+
++----------------------+-----------+
+|        Metric        |   Core 0  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |   0.0070  |
+| Runtime unhalted [s] |   0.0066  |
+|      Clock [MHz]     | 3600.4661 |
+|          CPI         |  30.4804  |
+|   Packed SP MFLOP/s  |     0     |
+|   Packed DP MFLOP/s  |     0     |
++----------------------+-----------+
