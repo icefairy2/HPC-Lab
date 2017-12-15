@@ -38,7 +38,7 @@ int main() {
       kernel2(in, out, N);
     }
   }
-
+  
   double time = sw.stop();
   printf("Elapsed time: %lf\n", time);
   

@@ -1,6 +1,6 @@
 CXX=icpc
-CXXFLAGS=-O3 -xMIC-AVX512
-LDFLAGS=
+CXXFLAGS= -pg -g #-O3 -xMIC-AVX512
+LDFLAGS= -pg -g
 DEFINES=
 SOURCES=superuseful.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

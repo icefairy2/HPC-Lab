@@ -1,0 +1,26 @@
+LIKWID_INCLUDE=/lrz/sys/tools/likwid/likwid-4.1/bin/../include/
+LIKWID_LIB=/lrz/sys/tools/likwid/likwid-4.1/bin/../lib/
+
+LIKWID_FLAGS = -DLIKWID_PERFMON -L$(LIKWID_LIB) -I$(LIKWID_INCLUDE) -llikwid
+
+CXX=icpc
+CXXFLAGS=-O3 -xHost -qopenmp -pthread $(LIKWID_FLAGS)
+LDFLAGS=-qopenmp $(LIKWID_FLAGS)
+DEFINES=
+SOURCES=dtrmv-modified.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=dtrmv-modified
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $< -o $@ $(DEFINES)
+
+$(SOURCES): Makefile.dtrmv
+	touch $@
+
+clean:
+	rm *.o *.optrpt $(EXECUTABLE)

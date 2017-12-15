@@ -3,6 +3,22 @@
 
 ## Part 1: Superuseful application - GNU gprof
 
+### 1. Why do the interesting functions kernel1 and kernel2 do not show up in the call graph when the Intel 17 compiler is used? Would you expect this behaviour from the documentation of the Intel 17 compiler?
+
+no call graph data is generated at all
+Apparently this is not available on Intel 64 architecture targeting x100 Xeon Phi (maybe this includes x200/KNL as well)
+
+### 2. Use compiler options such that kernel1 and kernel2 show up in the call graph. Is the resulting profile still useful?
+
+When using -g compiler flag (for debug information in .o file) and not using -O3 -xMIC-AVX512, a call graph is generated.
+But the program becomes super slow
+
+### 3. Add compiler pragmas such that the kernel1 and kernel2 show up in the call graph but without incurring significant profiler overhead.
+
+
+### 4. Which function should be optimized first (according to the profile data)?
+
+
 ## Part 2: Quicksort - Intel VTune Amplifier XE
 
 ## Part 3: CG - Scalasca
@@ -152,20 +168,70 @@ Core 11: 2549694 flops
 Core 12: 1530102 flops  
 Core 13: 510510 flops  
 
-Because the matrix is upper-triangular every chunk has a different number of flops using the default static scheduler. So every core has to execute less flops then the previous one even though the chunk size is the same.
+Because the matrix is upper-triangular every chunk has a different number of flops using the default static scheduler. So every core has to execute less flops than the previous one even though the chunk size is the same.
 This means that core 13 is most likely finished a long time before core 0 is.
 This is the load imbalance.
 
-#### b. Instead of hand calculation, it would be convenient to use hardware counters for the number of flops. However, these are known to be inexact since Sandy Bridge. Insert a marker for the dtrmv routine and measure the number of flops using LIKWID. Repeat the measurement for different numbers of threads. Are the measurements
-useful to find the load imbalance?
+#### b. Instead of hand calculation, it would be convenient to use hardware counters for the number of flops. However, these are known to be inexact since Sandy Bridge. Insert a marker for the dtrmv routine and measure the number of flops using LIKWID. Repeat the measurement for different numbers of threads. Are the measurements useful to find the load imbalance?
 
-Haswell has no FLOP events, only AVX_INSTS  
-Using FLOPS_AVX
+The Haswell architecture has no Events to measure FLOPS directly, only AVX_INSTS events. These count AVX & AVX2 256-bit instructions.  
+The *FLOPS_AVX* group uses the *AVX_INSTS_CALC* event to calculate MFLOP/s.  
 
-cpp file is prepared for execution and should compile
+```
+Packed SP MFLOP/s = 1.0E-06*(AVX_INSTS_CALC*8)/runtime  
+Packed DP MFLOP/s = 1.0E-06*(AVX_INSTS_CALC*4)/runtime  
+```
 
-#### c. Is *INSTR RETIRED ANY* a useful alternative?
+Multiplying *AVX_INSTS_CALC* by 4 and 8 gives an approximation of SP and DP instructions.  
+The results of the measurements can be found in the *ex4/dtrmv-results* folder.  
+In the application the dtrmv function is executed 10 times, therefore the counted AVX instructions have to be devided by 10 to get the number of instructions. For all tested number of threads the AVX instruction count then was around 12692000.  
+Assuming DP this would be 50768000 instructions.  
+Even though the number is off from what we calculated, the number of AVX instructions per core shows the load imbalance.  
+Every core executes a different amount of AVX instructions.  
+
+For 14 cores the highest count is 17373490 and the lowest is 770110. This is a similar ratio as for the manually calculated flops.  
+
+#### c. Is *INSTR_RETIRED_ANY* a useful alternative?
+
+*INSTR_RETIRED_ANY* counts all the instructions that are completed and needed for the applications (disregarding extra instructions executed due to *speculative execution*).  
+The count for *INSTR_RETIRED_ANY* varyies greatly for different numbers of threads. The count becomes larger for more threads.  
+This doesn't seem like a good alternative for counting the number of flops. Especially considering that *AVX_INSTS_CALC* doesn't really vary for different numbers of threads.  
 
 #### d. Modify the program such that the load is approximately balanced.
 
-dynamic scheduler
+*omp parallel for* uses a *static* schedule by default that assigns equally sized chunks to the different threads.  
+Possibilites for improving the load balancing are using a *dynamic* schedule, a *guided* schedule or a *static* schedule with a fixed smaller chunk size.  
+The dynamic schedule assigns chunks of iterations with a specified size to threads and when a thread is done executing it requests another chunks.  
+This comes with some overhead.  
+In the guided schedule the assigned block sizes are relatively large and become smaller until they reach a specified size (or 1 if nothing is specified).  
+This usually requires less overhead than dynamic scheduling.  
+Because the workload between iterations is monotonically decreasing in this case, using a static schedule with a relatively low chunk size may improve load balancing enough while avoiding the overheads for dynamic or guided scheduling.  
+
+Dynamic scheduling seems to improve load balancing. For a chunk size of 500, the load is relatively balanced but the execution time is slower (14-dynamic-500.txt). For a chunk size of 100 half of the threads execute aroung 12000000 AVX instruction and the other half around 5000000, but the execution time is faster than for the default static scheduling (14-dynamic-100.txt).  
+
+Guided scheduling with a minimal chunk size of 100 provides slightly better load balancing than the dynamic scheduling with an ececution time slightly faster than the default scheduling (14-guided-100.txt).  
+
+Static scheduling with a chunk size of 5 pretty much achieves perfect load balancing and the execution time seems to be faster than with the default scheduling (14-static-5.txt). Therefore we decided to test this for different numbers of threads.  
+
+The results can be seen in static-1.txt to static-28.txt.  
+Overall, the loads seem to be pretty much balanced and the execution times are a bit lower than for the non-balanced version.
+
+```c
+void dtrmv(double const* A, double const* x, double* y) {
+ #pragma omp parallel
+ {
+  LIKWID_MARKER_START("dtrmv");
+  //#pragma omp for schedule(dynamic,100)
+  //#pragma omp for schedule(guided,100)
+  #pragma omp for schedule(static,5)
+  for (int i = 0; i < N; ++i) {
+    double sum = 0.0;
+    for (int j = i; j < N; ++j) {
+      sum += A[i*N + j] * x[j];
+    }
+    y[i] = sum;
+  }
+  LIKWID_MARKER_STOP("dtrmv");
+ }
+} 
+```
