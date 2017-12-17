@@ -106,7 +106,8 @@ void quicksort_wrapper(double *data, int length){
 		// only a single thread launches the tasks
 		#pragma omp single
 		{
-			quicksort_parallel(data, length);
+			if (JOB_TYPE==0) quicksort_parallel(data, length);
+			else if (JOB_TYPE ==1) quicksort(data, length, 1);
 		}
 	}
 }
@@ -124,6 +125,11 @@ int main(int argc, char **argv)
 	double *data;
 
 	int mem_size;
+
+	if (JOB_TYPE!=0 && JOB_TYPE!=1) {
+		printf("Job type must be one of 0(array_length) or 1(recursion level)\n");
+		exit(1);
+	}
 
 	int i, j, k;
 
