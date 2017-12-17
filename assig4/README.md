@@ -5,19 +5,61 @@
 
 ### 1. Why do the interesting functions kernel1 and kernel2 do not show up in the call graph when the Intel 17 compiler is used? Would you expect this behaviour from the documentation of the Intel 17 compiler?
 
-no call graph data is generated at all
-Apparently this is not available on Intel 64 architecture targeting x100 Xeon Phi (maybe this includes x200/KNL as well)
+The profiling doesn't seem to create a call graph at all.
+
+```
+gprof: gmon.out file is missing call-graph data
+```
+
+The [superMUC help page](https://www.lrz.de/services/compute/supermuc/tuning/gprof/) mentions that *-pg* has to be specified before *-03*, but still no call graph is created.
+
+The [compiler documentation](https://software.intel.com/sites/default/files/managed/08/ac/PDF_CPP_Compiler_UG_17_0.pdf) mentions, that the profiling function isn't available on the Intel 64 architecture targeting the Xeon Phi coprocessor x100 product family (Knights Corner).  
+Maybe this also includes the x200 family (Knights Landing).  
+
+The Makefile looks like this:   
+```
+CXX=icpc
+CXXFLAGS= -pg -O3 -xMIC-AVX512
+LDFLAGS= -pg
+DEFINES=
+SOURCES=superuseful.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=superuseful
+```
+
+The profile data can be found in the *superuseful* folder (gprof-no-call-graph.txt)
 
 ### 2. Use compiler options such that kernel1 and kernel2 show up in the call graph. Is the resulting profile still useful?
 
-When using -g compiler flag (for debug information in .o file) and not using -O3 -xMIC-AVX512, a call graph is generated.
-But the program becomes super slow
+When using the *-g* compiler flag (for debug information in .o file) and not using *-O3 -xMIC-AVX512*, a call graph is generated.
+The program is not longer optimized for the Xeon Phi platform, which makes it run quite slowly. Before the execution time with profiling was around 20 seconds and now it is around 390 seconds.
+Therefore the profile data doesn't seem too useful.
+
+```
+CXX=icpc
+CXXFLAGS= -pg -g
+LDFLAGS= -pg -g
+DEFINES=
+SOURCES=superuseful.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=superuseful
+```
+
+The profile data can be found in the *superuseful* folder (gprof-call-graph.txt)
 
 ### 3. Add compiler pragmas such that the kernel1 and kernel2 show up in the call graph but without incurring significant profiler overhead.
 
+We weren't able to find information about this online.
 
 ### 4. Which function should be optimized first (according to the profile data)?
 
+The profile data with the call graph suggests that 57.1% of the execution time is spent in kernel2, but it's also called a lot more than kernel1.  
+Assuming it's always called way more often than kernel1 it would be good to optimize kernel2 first.  
+
+If it wouldn't be set to about 80% kernel2 calls, it would probably be better to optimize kernel1 first, as it takes a little bit more time per call.  
+
+kernel2: 158.69 sec / 7972 calls = 0.0198 sec per call  
+kernel1: 51.44 sec / 2028 calls = 0.0253 sec per call
 
 ## Part 2: Quicksort - Intel VTune Amplifier XE
 
@@ -74,7 +116,7 @@ LDFLAGS=-lrt  $(LIKWID_FLAGS)
 
 The command to run likwid-perfctr for a serial application with the marker API enabled in an interactive shell on the cluster looks like this:
 
-*srun likwid-perfctr -C S0:0 -g <groupname> -o out.txt -m <EXEC>*
+*srun likwid-perfctr -C S0:0 -g groupname -o out.txt -m EXEC*
 
 #### b.  Use *likwid-perfctr -a* to get a list of all available event groups. Which event groups are relevant for this kind of application and which are not? Give a brief explanation for every event group.
 
