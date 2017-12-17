@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --get-user-env 
-#SBATCH -o /home/hpc/t1221/di34mit/code/HPC-Lab/assig4/ex2/logs/quick_sort.%j.%N.out 
-#SBATCH -D /home/hpc/t1221/di34mit/code/HPC-Lab/assig4/ex2
+#SBATCH -o ${CODE_HOME}/assig4/ex2/logs/${FNAME}.%j.%N.out 
+#SBATCH -D ${CODE_HOME}/assig4/ex2
 #SBATCH -J QSort
 #SBATCH --clusters=mpp3
 #SBATCH --nodes=1

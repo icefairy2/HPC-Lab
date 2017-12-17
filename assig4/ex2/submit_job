@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+    echo "Usage: submit_job <OMP_THREADS> <JOB_TYPE=0(array_length)|1(recursion_level)> <THRESHOLD>"
+    exit 1
+fi
+
+OMP_THREADS=$1
+JOB_TYPE=$2
+THRESHOLD=$3
+FNAME="quick_sort_${JOB_TYPE}_${THRESHOLD}_"
+: "${CODE_HOME:?Env variable CODE_HOME must be set to point to the repository root}"
+echo $CODE_HOME
+#"s/\${GRID_SIZE}/${GRID_SIZE}/"
+sed -e "s/\${JOB_TYPE}/${JOB_TYPE}/" \
+	-e "s/\${LIMIT}/${THRESHOLD}/" \
+	Makefile.template > Makefile
+
+make
+export OMP_NUM_THREADS=${OMP_THREADS}
+sed -e "s/\${CODE_HOME}/${CODE_HOME//\//\\/}/" \
+    -e "s/\${FNAME}/${FNAME}/" sbatch.template > sbatch.final
+
+## Run using sbatch
+
+sbatch sbatch.final

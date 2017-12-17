@@ -19,8 +19,6 @@ void print_list(double *data, int length){
 	printf("\n");
 }
 
-#define THRESHOLD 16
-
 void quicksort(double *data, int length, int level){
 	if (length <= 1) return;
 
@@ -52,9 +50,9 @@ void quicksort(double *data, int length, int level){
 	//print_list(data, length);
 
 	/* recursion */
-	#pragma omp task final(level >= THRESHOLD)
+	#pragma omp task final(level >= LIMIT)
 	quicksort(data, right, level + 1);
-	#pragma omp task final(level >= THRESHOLD)
+	#pragma omp task final(level >= LIMIT)
 	quicksort(&(data[left]), length - left, level + 1);
 }
 
@@ -89,11 +87,11 @@ void quicksort_parallel(double *data, int length){
 	//print_list(data, length);
 
 	/* recursion */
-	#pragma omp task final(right < 10000) // maybe make cutoff dependent on recursion level
+	#pragma omp task final(right < LIMIT) // maybe make cutoff dependent on recursion level
 	{
 	quicksort_parallel(data, right);
 	}
-	#pragma omp task final ((length - left) < 10000)
+	#pragma omp task final ((length - left) < LIMIT)
 	{
 	quicksort_parallel(&(data[left]), length - left);
 	}

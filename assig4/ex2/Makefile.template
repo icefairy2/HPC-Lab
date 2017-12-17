@@ -1,5 +1,12 @@
+# TODO
+# Adjust these values, if necessary
+LIMIT=${LIMIT}
+# 0 means array length and 1 means otherwise
+JOB_TYPE=${JOB_TYPE}
+
 CXX=icpc
 CXXFLAGS=-O3 -xMIC-AVX512 -qopenmp
+DEFINES=-DLIMIT=$(LIMIT) -DJOB_TYPE=$(JOB_TYPE)
 LDFLAGS=-qopenmp
 SOURCES=quicksort.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
