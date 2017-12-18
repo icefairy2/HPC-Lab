@@ -27,7 +27,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=superuseful
 ```
 
-The profile data can be found in the *superuseful* folder (gprof-no-call-graph.txt)
+The profile data can be found in the *ex1* folder (gprof-no-call-graph.txt)
 
 ### 2. Use compiler options such that kernel1 and kernel2 show up in the call graph. Is the resulting profile still useful?
 
@@ -45,7 +45,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=superuseful
 ```
 
-The profile data can be found in the *superuseful* folder (gprof-call-graph.txt)
+The profile data can be found in the *ex1* folder (gprof-call-graph.txt)
 
 ### 3. Add compiler pragmas such that the kernel1 and kernel2 show up in the call graph but without incurring significant profiler overhead.
 
@@ -63,6 +63,62 @@ kernel2: 158.69 sec / 7972 calls = 0.0198 sec per call
 kernel1: 51.44 sec / 2028 calls = 0.0253 sec per call
 
 ## Part 2: Quicksort - Intel VTune Amplifier XE
+
+### 1. Find the optimal final-clause for your OpenMP parallelization of Quicksort using Intel VTune Amplifier XE.
+
+We used 64 threads for this, because this is the number of physical cores. We compared final clauses based on array length and on recursion depth.  
+
+For doing that we used the file *submit_job* which takes *NUM_THREADS*, *JOB_TYPE* and *THRESHOLD* as parameters and handles compilation and job submission.  
+*JOB_TYPE* 0 is for array length and 1 is for recursion depth.
+
+```
+ "Usage: submit_job <OMP_THREADS> <JOB_TYPE=0(array_length)|1(recursion_level)> <THRESHOLD>"
+```
+
+The results suggest that a large part is due to "Spin Time" and more precisicely due to *Imbalance or Serial Spinning*, which means there may be load imbalance or insufficient concurrency.  
+Also a lot of time is "Overhead Time" but most of it is categorized as "Other", which isn't really helpful.
+
+The top hotspots are *__kmpc_barrier* and *__kmp_fork_barrier*.  
+Both of them are connected to load imbalance or insufficient concurrency and it is suggested to try to increase task granularity.
+So we tried doing that while trying to minimize those hotspots.
+
+For a recursion level threshhold the optimal level appears to be 22.  
+For that value the hotspots are the smallest and overall elapsed time is the lowest.
+
+For length cut of the optimal length appears to be around 25000.  
+But overall it seems that the recursion level cut off is a bit better.  
+
+A few screenshots of the vtune programm can be found in the *ex2/images* folder.
+
+### 2. Look at the other analysis types besides “Basic Hotspots”. Are they useful for the Quicksort application? What is the difference between them?
+
+Advanced Hotspots: This type also identifies performance-critical code sections and correlates the data with the system performance.  
+	For Quicksort it seems like the basic Hotspots are sufficient.
+	
+Then there are three types for profiling Parallelism:
+
+Concurremcy: Visualizes thread parallelism on available cores, finds low or high concurrency areas and identifyies serial bottlenecks.  
+	For a parallel program this seems useful, but the parallelism in Quicksort may be to simple to make this useful.
+	
+Locks and Waits: Helps locating causes of low concurrency, such as large critical sections and heavily used locks.  
+	This isn't helpful for out Quicksort implementation because it doesn't jave locks or critical sections.
+	
+HPC Performance Characterization: Helps understanding how a compute-intensive OpenMP or MPI app is using the CPU, memory and FPU resources.  
+	This doesn't seem useful for Quicksort.
+	
+There are also two types for Microarchitecture profiling:
+
+General Exploration: Good for identifying the CPU pipeline stage and hardware units responsible for hardware bottlenecks.  
+	This doesn't seem useful for Quicksort.
+	
+Memory Access: Good for memory-bound apps, helps determining which level of memory hierarchy is impacting performancy by revieving CPU cache and main memory usage.  
+	This doesn't seem useful for Quicksort.
+	
+### 3. Does the optimal final clause depend on the number of threads or the array length?
+
+In our case the best performance was achieved with a recursion level cut off.
+Therefore our optimal clause depends on the number of threads.
+The optimal cut off for our implementation is at recursion level 22.
 
 ## Part 3: CG - Scalasca
 
