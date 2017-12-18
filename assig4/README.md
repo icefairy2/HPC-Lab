@@ -130,6 +130,71 @@ The optimal cut off for our implementation is at recursion level 22.
 
 ## Part 3: CG - Scalasca
 
+### 1. Environment.
+
+Tests have been run on CoolMUC2 which already has Scalasca installed. The algorithm has been
+run with a 512x512 per process, with 16 total processes.
+
+### 2. Profile GC implementation.
+
+Adding the `scalasca -instrument` prefix to the compilation procedures,
+the executable will generate the reports inside the `scorep` directory. By investingating
+the `profile.cubex` report, we can see that time varies for the `MPI_Allreduce` function. This might be
+due to the fact that communication amongst processes can vary depending on their position
+within the cluster architecture.
+
+Time (s) | Rank
+--- | ---
+0.11 | MPI Rank 0
+0.09 | MPI Rank 1
+0.09 | MPI Rank 2
+0.09 | MPI Rank 3
+0.11 | MPI Rank 4
+0.07 | MPI Rank 5
+0.09 | MPI Rank 6
+0.06 | MPI Rank 7
+0.11 | MPI Rank 8
+0.09 | MPI Rank 9
+0.07 | MPI Rank 10
+0.09 | MPI Rank 11
+0.11 | MPI Rank 12
+0.10 | MPI Rank 13
+0.09 | MPI Rank 14
+0.09 | MPI Rank 15
+
+The BoxPlot view offers a statistical representation of this data, containing maximum,
+minimum values, as well as the mean and standard deviation.
+
+  |![boxplot](ex3/images/boxplot.png)|
+  |:--:|
+  |*BoxPlot view*|
+
+Sum: 		1.4571635 \
+Count: 		16		\
+Mean: 		9.10727233e-02		 83% \
+Standard deviation: 		1.42075252e-02		 13% \
+Maximum: 		0.11038762		 100% \
+Upper quartile (Q3): 		0.10520491		 95% \
+Median: 		9.23303877e-02		 84% \
+Lower quartile (Q1): 		8.84740427e-02		 80% \
+Minimum:		5.72048322e-02		 52% \
+
+### 3. Manual instrumentation
+
+By default, instrumentation generates too much data. To counter this, we can disable it with
+`--nocompiler` and enable manual instrumentation with `--user` passed to `scalasca`.
+
+To define a regions of interest, we have to declare them using `SCOREP_USER_REGION_DEFINE(handle)`,
+and then declare their beginning and end points with `SCOREP_USER_REGION_BEGIN(handle, "name", SCOREP_USER_REGION_TYPE_COMMON)`
+and `SCOREP_USER_REGION_END(handle)`. We define three such sections: 2 for both `MPI_Allreduce` within the
+main while loop of the algorithm and one for the `g_product_operator` function.
+
+### 4. OpenMP improvements
+
+To further improve the performance of our algorithm, we can also use OpenMP directives
+in the main raw computing functions (`g_dot_product`, `g_scale`, `g_scale_add`, `g_copy`).
+
+
 ## Part 4: Likwid-perfctr
 
 ### 1. The file game.cpp could be part of a physics engine for a computer game. As in classic object oriented programming styles, it creates a heap-allocated object for every rigid body. Here, we want to analyse its performance characteristics using LIKWID.
