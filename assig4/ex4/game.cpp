@@ -34,10 +34,12 @@ public:
   }
 };
 
-void gravity(double dt, RigidBody** bodies, int N) {
+void gravity(double dt, RigidBody* bodies, int N) {
+// void gravity(double dt, RigidBody** bodies, int N) {
   LIKWID_MARKER_START("gravity");
   for (int n = 0; n < N; ++n) {
-    bodies[n]->move(0.0, 0.0, 0.5 * 9.81 * dt * dt);
+    bodies[n].move(0.0, 0.0, 0.5 * 9.81 * dt * dt);
+    // bodies[n]->move(0.0, 0.0, 0.5 * 9.81 * dt * dt);
   }
   LIKWID_MARKER_STOP("gravity");
 }
@@ -46,10 +48,11 @@ int main() {
   int N = 10000;
   int T = 10;
 
-  RigidBody** bodies = new RigidBody*[N];
-  for (int i = 0; i < N; ++i) {
-    bodies[i] = new RigidBody[i];
-  }
+  // RigidBody** bodies = new RigidBody*[N];
+  RigidBody* bodies = new RigidBody[N];
+  // for (int i = 0; i < N; ++i) {
+    // bodies[i] = new RigidBody[i];
+  // }
   
   Stopwatch sw;
   sw.start();
@@ -66,9 +69,9 @@ int main() {
   double time = sw.stop();
   printf("Time: %lf s, BW: %lf\n MB/s", time, T*N*sizeof(double)*1e-6 / time);
 
-  for (int i = 0; i < N; ++i) {
+  /*for (int i = 0; i < N; ++i) {
     delete bodies[i];
-  }
+  }*/
   delete[] bodies;
 
   return 0;
