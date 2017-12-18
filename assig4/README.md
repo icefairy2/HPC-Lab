@@ -50,6 +50,7 @@ The profile data can be found in the *superuseful* folder (gprof-call-graph.txt)
 ### 3. Add compiler pragmas such that the kernel1 and kernel2 show up in the call graph but without incurring significant profiler overhead.
 
 We weren't able to find information about this online.
+After trying out different directives, for example "#pragma omp parallel for", we couldn't find any of the clauses that would reduce the profiler overhead.
 
 ### 4. Which function should be optimized first (according to the profile data)?
 
