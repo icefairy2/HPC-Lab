@@ -85,14 +85,14 @@ So we tried doing that while trying to minimize those hotspots.
 For a recursion level threshhold the optimal level appears to be 22.  
 For that value the hotspots are the smallest and overall elapsed time is the lowest.
 
-|![recursion level](ex2/images/1-22-small.png)|
+|![recursion level](ex2/images/1-22-small.PNG)|
 |:--:| 
 |*optimal recursion level cut off*|
 
 For length cut of the optimal length appears to be around 25000.  
 But overall it seems that the recursion level cut off is a bit better.  
 
-|![array length](ex2/images/0-25000-small.png)|
+|![array length](ex2/images/0-25000-small.PNG)|
 |:--:| 
 |*optimal array length cut off*|
 
