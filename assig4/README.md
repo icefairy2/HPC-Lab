@@ -261,7 +261,7 @@ It can be seen that the cache miss ratio, the number of micro ops and the differ
 #### a. Calculate the number of flops for every core manually and explain the load imbalance
 
 Flops for upper-triangular matrix * vector are  
-$$O(2*(\sum_{i=0}^{N} N-i))$$  
+$O(2*(\sum_{i=0}^{N} N-i))$  
 
 One *Intel Xeon E5-2697 v3* has 14 cores. 
 
@@ -293,10 +293,10 @@ Core 11: 7858 to 8571
 Core 12: 8572 to 9285  
 Core 13: 9286 to 9999  
 
-Then we can calculate the number of flops per core using $$O(2*(\sum_{i=start}^{end} N-i))$$
+Then we can calculate the number of flops per core using $O(2*(\sum_{i=start}^{end} N-i))$
 
 For Core 0:  
-$$2*(\sum_{i=0}^{714} 10000-i)= 2 * 6894745 = 13789490 flops$$  
+$2*(\sum_{i=0}^{714} 10000-i)= 2 * 6894745 = 13789490 flops$
 
 Core 0: 13789490 flops  
 Core 1: 12767040 flops  
