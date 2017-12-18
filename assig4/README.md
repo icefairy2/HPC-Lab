@@ -173,37 +173,39 @@ LDFLAGS=-lrt  $(LIKWID_FLAGS)
 
 The command to run likwid-perfctr for a serial application with the marker API enabled in an interactive shell on the cluster looks like this:
 
-*srun likwid-perfctr -C S0:0 -g groupname -o out.txt -m EXEC*
+*srun likwid-perfctr -C S0:0 -g \<groupname\> -o out.txt -m \<EXEC\>*
+
+This will pin the application to the first core (index 0) on socket zero (S0)
 
 #### b.  Use *likwid-perfctr -a* to get a list of all available event groups. Which event groups are relevant for this kind of application and which are not? Give a brief explanation for every event group.
 
-| Group Name  	| Description                                                                                                                                                                             	|
-|-------------	|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| BRANCH      	| Branch prediction miss rate/ratio; How often a branch or a mispredicted branch occured per instruction retired in total; relevant                                                       	|
-| CACHES      	| Cache bandwidth in MBytes/s; Measures cache transfers between L1 and Memory; relevant                                                                                                   	|
-| CBOX        	| CBOX related data and metrics, CBOXes mediate traffic from L2 cache to the segmented L3 cache; Each CBOX is responsible for one segment (2.5 MByte); not relevant (serial application)  	|
-| CLOCK       	| Power and Energy consumption; Monitors the consumed energy on the package level with RAPL interface; relevant if going for energy-awareness (but also implemented in ENERGY)            	|
-| DATA        	| Load to store ratio; not really relevant                                                                                                                                                	|
-| ENERGY      	| Power and Energy consumption; Monitors the consumed energy on the package level and DRAM LEVEL with RAPL interface; relevant if going for energy-awareness                              	|
-| FALSE_SHARE 	| Measures L3 traffic induced by false-sharing; relevant                                                                                                                                  	|
-| FLOPS_AVX   	| Packed AVX MFLOP/s; Approximate counts of AVX & AVX2 256-bit instructions; relevant                                                                                                     	|
-| HA          	| Main memory bandwidth in MBytes/s seen from Home agent (central unit that is responsible for the protocol side of memory interactions); not really relevant (not many memory transfers) 	|
-| ICACHE      	| L1 instruction cache metrics; relevant                                                                                                                                                  	|
-| L2          	| L2 cache bandwidth in MBytes/s; relevant                                                                                                                                                	|
-| L2CACHE     	| L2 cache miss rate/ratio; relevant                                                                                                                                                      	|
-| L3          	| L3 cache bandwidth in MBytes/s; relevant                                                                                                                                                	|
-| L3CACHE     	| L3 cache miss rate/ratio; relevant                                                                                                                                                      	|
-| MEM         	| Main memory bandwidth in MBytes/s; Same metrics as HA group; not really relevant (not many memory transfers)                                                                            	|
-| NUMA        	| Local and remote memory accesses; not relevant (serial application)                                                                                                                     	|
-| QPI         	| QPI Link Layer data; not relevant (serial application)                                                                                                                                  	|
-| RECOVERY    	| Recovery duration after SSE exceptions, memory disambiguations, etc; not relevant                                                                                                       	|
-| SBOX        	| Ring Transfer bandwidth between the socket local ring(s); not relevant (serial application)                                                                                             	|
-| TLB_DATA    	| L2 data TLB miss rate/ratio; relevant                                                                                                                                                   	|
-| TLB_INSTR   	| L1 Instruction TLB miss rate/ratio; relevant                                                                                                                                            	|
-| UOPS        	| UOPs execution info; Measures issued, executed and retired uOPS; relevant                                                                                                               	|
-| UOPS_EXEC   	| Ratios of used and unused cycles regarding the execution stage in the pipeline; relevant                                                                                                	|
-| UOPS_ISSUE  	| Like EXEC, but issue stage; relevant                                                                                                                                                    	|
-| UOPS_RETIRE 	| Retire stage; relevant                                                                                                                                                                  	|
+| Group Name  	| Description   | Relevant? |
+|---------------|---------------|----------|
+| BRANCH      	| Branch prediction miss rate/ratio; How often a branch or a mispredicted branch occured per instruction retired in total | Relevant |
+| CACHES      	| Cache bandwidth in MBytes/s; Measures cache transfers between L1 and Memory | Relevant |
+| CBOX        	| CBOX related data and metrics, CBOXes mediate traffic from L2 cache to the segmented L3 cache; Each CBOX is responsible for one segment (2.5 MByte)  	| Not relevant (serial application)
+| CLOCK       	| Power and Energy consumption; Monitors the consumed energy on the package level with RAPL interface | May relevant |
+| DATA        	| Load to store ratio | Not really relevant |
+| ENERGY      	| Power and Energy consumption; Monitors the consumed energy on the package level and DRAM LEVEL with RAPL interface | Maybe relevant if going for energy-awareness |
+| FALSE\_SHARE 	| Measures L3 traffic induced by false-sharing | Not relevant |
+| FLOPS\_AVX   	| Packed AVX MFLOP/s; Approximate counts of AVX & AVX2 256-bit instructions | Not really relevant|
+| HA          	| Main memory bandwidth in MBytes/s seen from Home agent (central unit that is responsible for the protocol side of memory interactions) | Not relevant  |
+| ICACHE      	| L1 instruction cache metrics | Relevant |
+| L2          	| L2 cache bandwidth in MBytes/s | Not relevant |
+| L2CACHE     	| L2 cache miss rate/ratio | Relevant |
+| L3          	| L3 cache bandwidth in MBytes/s | Not relevant |
+| L3CACHE     	| L3 cache miss rate/ratio| Maybe relevant |
+| MEM         	| Main memory bandwidth in MBytes/s; Same metrics as HA group| Not Relevant    |
+| NUMA        	| Local and remote memory accesses | Not relevant (serial application)    |
+| QPI           | QPI Link Layer data | not relevant (serial application) |
+| RECOVERY    	| Recovery duration after SSE exceptions, memory disambiguations, etc | Not relevant |
+| SBOX        	| Ring Transfer bandwidth between the socket local ring(s) | Not relevant (serial application) |
+| TLB\_DATA    	| L2 data TLB miss rate/ratio | Relevant |
+| TLB\_INSTR   	| L1 Instruction TLB miss rate/ratio | Relevant |
+| UOPS        	| UOPs execution info; Measures issued, executed and retired uOPS | Relevant |
+| UOPS\_EXEC   	| Ratios of used and unused cycles regarding the execution stage in the pipeline | Relevant |
+| UOPS\_ISSUE  	| Like EXEC, but Issue stage | Relevant|
+| UOPS\_RETIRE 	| Retire stage | Relevant |
 
 #### c. Run the application and measure relevant event groups. What would be your suggestions for improving the performance of the application?
 

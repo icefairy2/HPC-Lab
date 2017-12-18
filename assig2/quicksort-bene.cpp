@@ -154,14 +154,8 @@ int main(int argc, char **argv)
 
 	//print_list(data, length);
 
-<<<<<<< HEAD:assig2/quicksort.cpp
-  #pragma omp parallel
-	#pragma omp single
-	quicksort(data, length, 0);
-=======
 	//quicksort(data, length);
 	quicksort_wrapper(data,length);
->>>>>>> 0f2f12bf664ba1a0f7d6dc21bd142b3e86d18278:assig2/quicksort-bene.cpp
 
 	double time = stopwatch.stop();
 
