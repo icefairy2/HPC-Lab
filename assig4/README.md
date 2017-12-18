@@ -85,8 +85,16 @@ So we tried doing that while trying to minimize those hotspots.
 For a recursion level threshhold the optimal level appears to be 22.  
 For that value the hotspots are the smallest and overall elapsed time is the lowest.
 
+|![recursion level](ex2/images/1-22-small.png)|
+|:--:| 
+|*optimal recursion level cut off*|
+
 For length cut of the optimal length appears to be around 25000.  
 But overall it seems that the recursion level cut off is a bit better.  
+
+|![array length](ex2/images/0-25000-small.png)|
+|:--:| 
+|*optimal array length cut off*|
 
 A few screenshots of the vtune programm can be found in the *ex2/images* folder.
 
@@ -97,7 +105,7 @@ Advanced Hotspots: This type also identifies performance-critical code sections 
 	
 Then there are three types for profiling Parallelism:
 
-Concurremcy: Visualizes thread parallelism on available cores, finds low or high concurrency areas and identifyies serial bottlenecks.  
+Concurrency: Visualizes thread parallelism on available cores, finds low or high concurrency areas and identifyies serial bottlenecks.  
 	For a parallel program this seems useful, but the parallelism in Quicksort may be to simple to make this useful.
 	
 Locks and Waits: Helps locating causes of low concurrency, such as large critical sections and heavily used locks.  
