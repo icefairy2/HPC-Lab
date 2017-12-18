@@ -148,11 +148,46 @@ The command to run likwid-perfctr for a serial application with the marker API e
 | UOPS_ISSUE  	| Like EXEC, but issue stage; relevant                                                                                                                                                    	|
 | UOPS_RETIRE 	| Retire stage; relevant                                                                                                                                                                  	|
 
-#### c. Run the application and measure relevant event groups. What would be your
-suggestions for improving the performance of the application?
+#### c. Run the application and measure relevant event groups. What would be your suggestions for improving the performance of the application?
 
-TODO (results already in git)
-use AVX instructions? l2 misses? reduce unused uops cycles?
+Results for even loop runs can be found in the folder `ex4/game_results`. For our performance two numbers are interesting. The event group L2Cache and UOPS. We notice a lot of L2 cache misses which are about 33% of all L2 accesses. For micro operations we notice a large number of ops as well as a significant difference between the retired microops (ops that were actually useful) vs the executed ops (including some discarded ops). These situations are listed in the figures below.
+
+|![L2Cache](ex4/images/l2_old.png)|
+|:--:| 
+|*L2Cache*|
+
+|![UOPS](ex4/images/uops_old.png)|
+|:--:| 
+|*UOPS*|
+
+Upon analysis we figure out the following code fragment that is used.
+```C++
+RigidBody** bodies = new RigidBody*[N];
+for (int i = 0; i < N; ++i) {
+  bodies[i] = new RigidBody[i];
+}
+// ...
+// Some other stuff and then when we access these bodies it looks like
+for (int n = 0; n < N; ++n) {
+  bodies[n]->move(0.0, 0.0, 0.5 * 9.81 * dt * dt);
+}
+```
+
+We allocate a contiguous array of pointers but each object is allocated memory non contiguously. As a result even though we access them one after another there are a lot of cache misses. To fix this we can try to allocate a contiguous array instead of an array of pointers.
+```C++
+RigidBody* bodies = new RigidBody[N];
+```
+This helps improve the cache hit hate for L2 (which is responsible for storing the array) and by reducing the numbing of micro ops as we reduce the number of load store operations due to cache misses. After fixing this the results for the two event groups are illustrated below.
+
+|![L2Cache](ex4/images/l2_new.png)|
+|:--:| 
+|*L2Cache after improvement*|
+
+|![UOPS](ex4/images/uops_new.png)|
+|:--:| 
+|*UOPS after improvement*|
+
+It can be seen that the cache miss ratio, the number of micro ops and the difference between executed versus retired micro ops all go down.
 
 ### 2. The file dtrmv.cpp contains a routine for upper-triangular matrix times vector multiplication. We want to investigate possible load imbalances, as the routine does not scale well to multiple cores.
 

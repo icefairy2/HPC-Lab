@@ -1,0 +1,35 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz
+CPU type:	Intel Xeon Haswell EN/EP/EX processor
+CPU clock:	2.60 GHz
+--------------------------------------------------------------------------------
+Region gravity, Group 1: UOPS
++-------------------+----------+
+|    Region Info    |  Core 0  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.000307 |
+|     call count    |    10    |
++-------------------+----------+
++-------------------------+---------+--------+
+|          Event          | Counter | Core 0 |
++-------------------------+---------+--------+
+|    INSTR_RETIRED_ANY    |  FIXC0  | 514907 |
+|  CPU_CLK_UNHALTED_CORE  |  FIXC1  | 434941 |
+|   CPU_CLK_UNHALTED_REF  |  FIXC2  | 942344 |
+|     UOPS_ISSUED_ANY     |   PMC0  | 621589 |
+|   UOPS_EXECUTED_THREAD  |   PMC1  | 714472 |
+|     UOPS_RETIRED_ALL    |   PMC2  | 705403 |
+| UOPS_ISSUED_FLAGS_MERGE |   PMC3  |  4380  |
++-------------------------+---------+--------+
++----------------------+-----------+
+|        Metric        |   Core 0  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |   0.0003  |
+| Runtime unhalted [s] |   0.0002  |
+|      Clock [MHz]     | 1200.0367 |
+|          CPI         |   0.8447  |
+|      Issued UOPs     |   621589  |
+|      Merged UOPs     |    4380   |
+|     Executed UOPs    |   714472  |
+|     Retired UOPs     |   705403  |
++----------------------+-----------+
