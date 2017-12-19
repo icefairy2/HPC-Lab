@@ -189,6 +189,10 @@ and then declare their beginning and end points with `SCOREP_USER_REGION_BEGIN(h
 and `SCOREP_USER_REGION_END(handle)`. We define three such sections: 2 for both `MPI_Allreduce` within the
 main while loop of the algorithm and one for the `g_product_operator` function.
 
+  |![scal-man](ex3/images/scalasca-manual.png)|
+  |:--:|
+  |*Manual instrumentation regions in call tree*|
+
 ### 4. OpenMP improvements
 
 To further improve the performance of our algorithm, we can also use OpenMP directives

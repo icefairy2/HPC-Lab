@@ -5,6 +5,11 @@
 #include <fstream>
 #include <sys/time.h>
 #include <mpi.h>
+#include <scorep/SCOREP_User.h>
+
+SCOREP_USER_REGION_DEFINE(reduce1);
+SCOREP_USER_REGION_DEFINE(reduce2);
+SCOREP_USER_REGION_DEFINE(prodop);
 
 /// store number of grid points in one dimension
 std::size_t grid_points_1d = 0;
@@ -329,6 +334,7 @@ void g_product_operator(double* grid,
                         double* result,
                         double* n_data)
 {
+    SCOREP_USER_REGION_BEGIN(prodop, "Product operator MPI", SCOREP_USER_REGION_TYPE_COMMON);
     double mesh_width = 1.0/((double)(grid_points_1d-1));
 
     // Source rank is the same as cart_rank
@@ -443,6 +449,8 @@ void g_product_operator(double* grid,
                                        ) * (mesh_width*mesh_width);
         }
     }
+
+    SCOREP_USER_REGION_END(prodop);
 }
 
 /**
@@ -514,8 +522,10 @@ std::size_t solve(double* grid, double* b, std::size_t cg_max_iterations, double
         // a = d_new / d.q
         // Reduce results of dot product from all processes
         r_dot = g_dot_product(d, q);
+        SCOREP_USER_REGION_BEGIN(reduce1, "Allreduce 1", SCOREP_USER_REGION_TYPE_COMMON);
         MPI_Allreduce(&r_dot, &r_reduce, 1,
                       MPI_DOUBLE, MPI_SUM, cartcomm);
+        SCOREP_USER_REGION_END(reduce1);
         a = delta_new/r_reduce;
 
         // x = x + a*d
@@ -536,8 +546,10 @@ std::size_t solve(double* grid, double* b, std::size_t cg_max_iterations, double
 
         // calculate new deltas and determine beta
         r_dot = g_dot_product(r, r);
+        SCOREP_USER_REGION_BEGIN(reduce2, "Allreduce 2", SCOREP_USER_REGION_TYPE_COMMON);
         MPI_Allreduce(&r_dot, &r_reduce, 1,
                       MPI_DOUBLE, MPI_SUM, cartcomm);
+        SCOREP_USER_REGION_END(reduce2);
         delta_old = delta_new;
         delta_new = r_reduce;
         beta = delta_new/delta_old;
