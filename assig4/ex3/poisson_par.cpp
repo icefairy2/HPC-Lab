@@ -253,6 +253,7 @@ void init_b(double* b)
  */
 void g_copy(double* dest, double* src)
 {
+    #pragma omp parallel for
     for (int i = 0; i < GRID_SIZE*GRID_SIZE; i++)
     {
         dest[i] = src[i];
@@ -270,6 +271,7 @@ double g_dot_product(double* grid1, double* grid2)
 {
     double tmp = 0.0;
 
+    #pragma omp parallel for collapse(2)
     for (int i = _istart; i < _iend; i++)
     {
         for (int j = _jstart; j < _jend; j++)
@@ -290,6 +292,7 @@ double g_dot_product(double* grid1, double* grid2)
  */
 void g_scale(double* grid, double scalar)
 {
+    #pragma omp parallel for collapse(2)
     for (int i = _istart; i < _iend; i++)
     {
         for (int j = _jstart; j < _jend; j++)
@@ -309,6 +312,7 @@ void g_scale(double* grid, double scalar)
  */
 void g_scale_add(double* dest, double* src, double scalar)
 {
+    #pragma omp parallel for collapse(2)
     for (int i = _istart; i < _iend; i++)
     {
         for (int j = _jstart; j < _jend; j++)

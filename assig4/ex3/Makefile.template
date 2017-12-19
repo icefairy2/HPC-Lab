@@ -2,7 +2,7 @@
 # Adjust these values, if necessary
 GRID_SIZE=${GRID_SIZE}
 
-CXX=scalasca -instrument --user --nocompiler mpicxx
+CXX=scalasca -instrument --user --nocompiler mpicxx -openmp
 CXXFLAGS= # -qopenmp
 # LDFLAGS=-qopenmp
 DEFINES=-DGRID_SIZE=$(GRID_SIZE)
